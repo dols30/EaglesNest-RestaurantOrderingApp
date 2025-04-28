@@ -1,0 +1,6 @@
+# Ignore common build output folders
+[Bb]in/
+[Oo]bj/
+
+# Ignore user-specific files
+*.user
