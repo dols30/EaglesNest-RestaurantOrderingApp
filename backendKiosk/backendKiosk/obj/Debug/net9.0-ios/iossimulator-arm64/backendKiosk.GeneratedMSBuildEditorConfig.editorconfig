@@ -1,0 +1,73 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net9.0-ios
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = backendKiosk
+build_property.ProjectDir = /Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/App.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.App.xaml
+build_metadata.AdditionalFiles.TargetPath = App.xaml
+build_metadata.AdditionalFiles.RelativePath = App.xaml
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/AppShell.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.AppShell.xaml
+build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
+build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/Project/Views/CheckoutView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.Project.Views.CheckoutView.xaml
+build_metadata.AdditionalFiles.TargetPath = Project/Views/CheckoutView.xaml
+build_metadata.AdditionalFiles.RelativePath = Project/Views/CheckoutView.xaml
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/Project/Views/ComboBuilderPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.Project.Views.ComboBuilderPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Project/Views/ComboBuilderPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Project/Views/ComboBuilderPage.xaml
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/Project/Views/ItemAddPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.Project.Views.ItemAddPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Project/Views/ItemAddPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Project/Views/ItemAddPage.xaml
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/Project/Views/KioskStartPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.Project.Views.KioskStartPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Project/Views/KioskStartPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Project/Views/KioskStartPage.xaml
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/Project/Views/MainMenuPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.Project.Views.MainMenuPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Project/Views/MainMenuPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Project/Views/MainMenuPage.xaml
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/Resources/Styles/Colors.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.Resources.Styles.Colors.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources/Styles/Colors.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources/Styles/Colors.xaml
+
+[/Users/bashyaldolraj/Desktop/Project Starter Solution/backendKiosk/backendKiosk/Resources/Styles/Styles.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = backendKiosk.Resources.Styles.Styles.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources/Styles/Styles.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources/Styles/Styles.xaml

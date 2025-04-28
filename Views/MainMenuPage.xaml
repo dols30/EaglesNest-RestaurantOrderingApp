@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RestaurantAppFullImp.Project.Views.MainMenuPage"
+             Title="MainMenuPage">
+
+    <ContentPage.Resources>
+        <Style TargetType="Border" x:Key="MenuButtonBorder">
+            <Setter Property="WidthRequest" Value="220"/>
+            <Setter Property="HeightRequest" Value="80"/>
+            <Setter Property="Stroke" Value="#000000"/>
+            <Setter Property="StrokeThickness" Value="3"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+            <Setter Property="BackgroundColor" Value="#FFCCCC"/>
+        </Style>
+        <Style TargetType="Button" x:Key="MenuButton">
+            <Setter Property="BackgroundColor" Value="#00000000"/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="100, 100, *" ColumnDefinitions="*, 300" x:Name="grdPageFrame">
+        <Label Text="Eagles Nest"
+               FontSize="50" 
+               HorizontalTextAlignment="Center"
+               VerticalTextAlignment="Center"
+               BackgroundColor="#999" Grid.ColumnSpan="2"/>
+
+        <Label Text="Welcome, John Doe!" Grid.Row="1"
+               HorizontalTextAlignment="Center"
+               VerticalTextAlignment="Center"
+               FontSize="20"/>
+
+        <BoxView Grid.Row="2" BackgroundColor="#00000000"/>
+
+        <VerticalStackLayout Grid.Row="3" Spacing="40">
+            <Border Style="{StaticResource MenuButtonBorder}">
+                <Button Style="{StaticResource MenuButton}"
+                        Text="Build a Combo" Clicked="ButtonBuildCombo"/>
+            </Border>
+            <Border Style="{StaticResource MenuButtonBorder}">
+                <Button Style="{StaticResource MenuButton}"
+                        Text="Add a Side" Clicked="ButtonAddSide"/>
+            </Border>
+            <Border Style="{StaticResource MenuButtonBorder}">
+                <Button Style="{StaticResource MenuButton}"
+                        Text="Add a Drink" Clicked="ButtonAddDrink"/>
+            </Border>
+            <Border Style="{StaticResource MenuButtonBorder}">
+                <Button Style="{StaticResource MenuButton}"
+                        Text="Add an Entree" Clicked="ButtonAddEntree"/>
+            </Border>
+            <Border Style="{StaticResource MenuButtonBorder}">
+                <Button Style="{StaticResource MenuButton}"
+                        Text="Add a Desert" Clicked="ButtonAddDessert"/>
+            </Border>
+        </VerticalStackLayout>
+        
+        <!--
+            Cart View
+        -->  
+
+        
+
+        <Grid RowDefinitions="80, *, 80" 
+            Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" BackgroundColor="#10000000">
+            
+            <!--Header-->
+            <Button Text="Cart" WidthRequest="60" HeightRequest="60"
+                Clicked="ButtonToggleCart" HorizontalOptions="End" Margin="5"/>
+            
+            <!--Cart Body-->
+            <CollectionView x:Name="collCart" SelectionMode="Multiple"
+                        Grid.Row="1" Grid.Column="1" VerticalOptions="FillAndExpand">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="20"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.EmptyView>
+                    <ContentView>
+                        <Border Stroke="#000" StrokeThickness="5" StrokeShape="RoundRectangle 10" 
+                               Margin="20" WidthRequest="200" HeightRequest="200" VerticalOptions="Center" >
+                            <Label Text="Cart is empty. Add a burger?" BackgroundColor="#8F8"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   FontSize="30" FontAttributes="Bold"
+                                   />
+                        </Border>
+                    </ContentView>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border WidthRequest="200" Padding="20" Margin="5"
+                                BackgroundColor="#8F8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Detail}"/>
+                                <Label Text="{Binding ItemCost}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+            <!--Cart View Footer-->
+            <HorizontalStackLayout Grid.Row="2" Spacing="20" HeightRequest="60" x:Name="layoutCartControls"
+                                   VerticalOptions="Center" HorizontalOptions="Center">
+                <Button Text="Delete Selected" Clicked="ButtonDeleteCartItems"/>
+                <Button Text="Checkout" Clicked="ButtonCheckoutCart"/>
+
+            </HorizontalStackLayout>
+        </Grid>
+        
+    </Grid>
+</ContentPage>

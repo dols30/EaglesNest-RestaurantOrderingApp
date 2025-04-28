@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RestaurantAppFullImp.Project.Views.CheckoutView"
+             Title="CheckoutView">
+
+    <ContentPage.Resources>
+        <Style TargetType="Label" x:Key="AppTitleBar">
+            <Setter Property="FontSize" Value="50"/>
+            <Setter Property="HorizontalTextAlignment" Value="Center"/>
+            <Setter Property="VerticalTextAlignment" Value="Center"/>
+            <Setter Property="BackgroundColor" Value="#999"/>
+        </Style>
+    </ContentPage.Resources>
+    
+    <Grid RowDefinitions="80, *, 300, 80" 
+            Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" 
+            BackgroundColor="#10000000">
+
+        <!--Header-->
+        <Label Text="Checkout" Style="{x:StaticResource AppTitleBar}"/>
+
+        <!--Cart Body-->
+        <CollectionView x:Name="collCheckoutCart" Grid.Row="1" Grid.Column="1" 
+                        VerticalOptions="FillAndExpand">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Horizontal"  Span="2"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.EmptyView>
+                <ContentView>
+                    <Border Stroke="#000" StrokeThickness="5" StrokeShape="RoundRectangle 10" 
+                   Margin="20" WidthRequest="200" HeightRequest="200" VerticalOptions="Center" >
+                        <Label Text="Cart is empty. Add a burger?" BackgroundColor="#8F8"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       FontSize="30" FontAttributes="Bold"
+                       />
+                    </Border>
+                </ContentView>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border WidthRequest="200" Padding="20" Margin="5"
+                    BackgroundColor="#8F8">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Detail}"/>
+                            <Label Text="{Binding ItemCost}"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Border Grid.Row="2">
+            <Grid RowDefinitions="*" ColumnDefinitions="*, *">
+                <VerticalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Center">
+                        <Label Text="SubTotal: " HorizontalTextAlignment="Center" Padding="10, 20" FontSize="30"/>
+                        <Label Text="xx.xx" HorizontalTextAlignment="Center" Padding="0, 20" FontSize="30" x:Name="lblSubTotal"/>
+                    </HorizontalStackLayout>
+                    <Label Text="Add a Tip?" HorizontalTextAlignment="Center" Padding="20" FontSize="30"/>
+                    <Entry Placeholder="Tip..." x:Name="txtTip"  Margin="50, 0" TextChanged="UpdateMealCost"/>
+
+                    <HorizontalStackLayout HorizontalOptions="Center">
+                        <Label Text="Tax: " HorizontalTextAlignment="Center" Padding="0, 20" FontSize="30"/>
+                        <Label Text="xx.xx" HorizontalTextAlignment="Center" Padding="10, 20" FontSize="30" x:Name="lblTax"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Total" HorizontalTextAlignment="Center" Padding="20" FontSize="30"/>
+                    <Label Text="$XX.XX" HorizontalTextAlignment="Center" Padding="0, 5" FontSize="30" x:Name="lblMealCost"/>
+                </VerticalStackLayout>
+
+            </Grid>
+        </Border>
+        <!--Cart View Footer-->
+        <HorizontalStackLayout Grid.Row="3" Spacing="20" HeightRequest="60" x:Name="layoutCartControls"
+                           VerticalOptions="Center" HorizontalOptions="Center">
+           
+            <Button Text="Submit Order" Clicked="ButtonSubmitOrder"/>
+            <Button Text="Cancel" Clicked="ButtonCancelCheckout"/>
+
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>
