@@ -133,9 +133,14 @@
                     </CollectionView>
                 </VerticalStackLayout>
 
-                <Button Grid.Row="5" Text="Add to Order" FontSize="30" BackgroundColor="LightGreen" TextColor="DarkGreen"
-                    HorizontalOptions="Center" VerticalOptions="Center" Clicked="AddItemClicked"
-                    WidthRequest="300" HeightRequest="80"/>
+                <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                    <Button Text="Add to Order" FontSize="30" BackgroundColor="LightGreen" TextColor="DarkGreen"
+                        HorizontalOptions="Center" VerticalOptions="Center" Clicked="AddItemClicked"
+                        WidthRequest="300" HeightRequest="80"/>
+                    <Button Text="Cancel" FontSize="30" BackgroundColor="#FFB0B0" TextColor="DarkRed"
+                        HorizontalOptions="Center" VerticalOptions="Center" Clicked="CancelClicked"
+                        WidthRequest="200" HeightRequest="80"/>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
         
         </Grid>

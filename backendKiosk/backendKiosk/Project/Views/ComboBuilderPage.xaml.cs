@@ -1,4 +1,7 @@
 using System.Collections.ObjectModel;
+using Microsoft.Maui.Controls;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace backendKiosk.Project.Views;
 using Models;
@@ -9,148 +12,286 @@ public partial class ComboBuilderPage : ContentPage
 	MenuItem? selectedSide = null;
 	MenuItem? selectedDrink = null;
 	Models.MenuSizeType MealSize = Models.MenuSizeType.SMALL;
+    
+    private ObservableCollection<ComboItemView> _entreeViews = new();
+    private ObservableCollection<ComboItemView> _sideViews = new();
+    private ObservableCollection<ComboItemView> _drinkViews = new();
+    private ObservableCollection<SizeTypeView> _sizeOptions = new()
+    {
+        new SizeTypeView {Text = "Small" },
+        new SizeTypeView {Text = "Medium", Rate=$"+{MenuItem.MEDIUM_RATE:F2}%" },
+        new SizeTypeView {Text = "Large", Rate=$"+{MenuItem.LARGE_RATE:F2}%" }
+    };
+    private bool _isLoading = false;
 
 	public ComboBuilderPage()
 	{
-		InitializeComponent();
-
-		var entrees = App.Menu.GetItems(MenuItemType.ENTREE);
-		var sides = App.Menu.GetItems(MenuItemType.SIDE);
-		var drinks = App.Menu.GetItems(MenuItemType.DRINK);
-
-		ObservableCollection<ComboItemView> entreeViews = new();
-		foreach (var entree in entrees)
+		try 
 		{
-			MenuItem item = entree.DeepCopy();
-			entreeViews.Add(new ComboItemView { Item = item });
+			InitializeComponent();
+			
+            collEntreeSelection.ItemsSource = _entreeViews;
+            collSideSelection.ItemsSource = _sideViews;
+            collDrinkSelection.ItemsSource = _drinkViews;
+            collSizeSelection.ItemsSource = _sizeOptions;
 		}
-		ObservableCollection<ComboItemView> sideViews = new();
-		foreach (var side in sides)
+		catch (Exception ex)
 		{
-			MenuItem item = side.DeepCopy();
-			sideViews.Add(new ComboItemView { Item = item });
+			MainThread.BeginInvokeOnMainThread(async () => {
+				await DisplayAlert("Error", $"Failed to initialize combo builder: {ex.Message}", "OK");
+				System.Diagnostics.Debug.WriteLine($"ComboBuilderPage initialization error: {ex.Message}");
+			});
 		}
-		ObservableCollection<ComboItemView> drinkViews = new();
-		foreach (var drink in drinks)
-		{
-			MenuItem item = drink.DeepCopy();
-			drinkViews.Add(new ComboItemView { Item = item });
-		}
-		collEntreeSelection.ItemsSource = entreeViews;
-		collSideSelection.ItemsSource = sideViews;
-		collDrinkSelection.ItemsSource = drinkViews;
+	}
+	
+	private async Task LoadItemsAsync()
+	{
+        if (_isLoading) return;
+        _isLoading = true;
 
-		collSizeSelection.ItemsSource = new ObservableCollection<SizeTypeView>
+	    try
+	    {
+            await Task.Run(() =>
+            {
+                if (App.Menu == null)
+                {
+                    throw new InvalidOperationException("Menu controller is not initialized");
+                }
+                
+                var entrees = App.Menu.GetItems(MenuItemType.ENTREE);
+                var sides = App.Menu.GetItems(MenuItemType.SIDE);
+                var drinks = App.Menu.GetItems(MenuItemType.DRINK);
+        
+                var entreeViewsToAdd = entrees.Select(entree => new ComboItemView { Item = entree.DeepCopy() }).ToList();
+                var sideViewsToAdd = sides.Select(side => new ComboItemView { Item = side.DeepCopy() }).ToList();
+                var drinkViewsToAdd = drinks.Select(drink => new ComboItemView { Item = drink.DeepCopy() }).ToList();
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    _entreeViews.Clear();
+                    foreach (var view in entreeViewsToAdd) _entreeViews.Add(view);
+
+                    _sideViews.Clear();
+                    foreach (var view in sideViewsToAdd) _sideViews.Add(view);
+                    
+                    _drinkViews.Clear();
+                    foreach (var view in drinkViewsToAdd) _drinkViews.Add(view);
+
+                    if (collSizeSelection != null && collSizeSelection.SelectedItem == null && _sizeOptions.Any())
+                    {
+                        collSizeSelection.SelectedItem = _sizeOptions.FirstOrDefault(s => s.Text == "Small") ?? _sizeOptions.First();
+                    }
+                    RefreshCost();
+                });
+            });
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"LoadItemsAsync error: {ex.Message}");
+            MainThread.BeginInvokeOnMainThread(async () => {
+                await DisplayAlert("Error", $"Failed to load menu items: {ex.Message}", "OK");
+            });
+        }
+        finally
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                _isLoading = false;
+            });
+        }
+	}
+
+	protected override async void OnAppearing()
+	{
+		base.OnAppearing();
+		
+		try
 		{
-			new SizeTypeView {Text = "Small" },
-			new SizeTypeView {Text = "Medium", Rate=$"+{MenuItem.MEDIUM_RATE:F2}%" },
-			new SizeTypeView {Text = "Large", Rate=$"+{MenuItem.LARGE_RATE:F2}%" }
-		};
+            await LoadItemsAsync();
+		}
+		catch (Exception ex)
+		{
+		    System.Diagnostics.Debug.WriteLine($"OnAppearing error: {ex.Message}");
+		}
 	}
 
 	private void SelectEntree(object sender, SelectionChangedEventArgs e)
 	{
-		if (collEntreeSelection.SelectedItem is ComboItemView comboItem)
+		try
 		{
-			selectedEntree = comboItem.Item;
-			RefreshCost();
+		    if (e?.CurrentSelection == null)
+                return;
+                
+			if (e.CurrentSelection.Count > 0 && e.CurrentSelection[0] is ComboItemView comboItem && comboItem?.Item != null)
+			{
+				selectedEntree = comboItem.Item;
+				RefreshCost();
+			}
+		}
+		catch (Exception ex)
+		{
+		    System.Diagnostics.Debug.WriteLine($"SelectEntree error: {ex.Message}");
+		    selectedEntree = null;
 		}
 	}
 
 	private void SelectSide(object sender, SelectionChangedEventArgs e)
 	{
-		if (collSideSelection.SelectedItem is ComboItemView comboItem)
+		try
 		{
-			selectedSide = comboItem.Item;
-			RefreshCost();
+		    if (e?.CurrentSelection == null)
+                return;
+                
+			if (e.CurrentSelection.Count > 0 && e.CurrentSelection[0] is ComboItemView comboItem && comboItem?.Item != null)
+			{
+				selectedSide = comboItem.Item;
+				RefreshCost();
+			}
+		}
+		catch (Exception ex)
+		{
+		    System.Diagnostics.Debug.WriteLine($"SelectSide error: {ex.Message}");
+		    selectedSide = null;
 		}
 	}
 
 	private void SelectDrink(object sender, SelectionChangedEventArgs e)
 	{
-		if (collDrinkSelection.SelectedItem is ComboItemView comboItem)
+		try
 		{
-			selectedDrink = comboItem.Item;
-			RefreshCost();
+		    if (e?.CurrentSelection == null)
+                return;
+                
+			if (e.CurrentSelection.Count > 0 && e.CurrentSelection[0] is ComboItemView comboItem && comboItem?.Item != null)
+			{
+				selectedDrink = comboItem.Item;
+				RefreshCost();
+			}
+		}
+		catch (Exception ex)
+		{
+		    System.Diagnostics.Debug.WriteLine($"SelectDrink error: {ex.Message}");
+		    selectedDrink = null;
 		}
 	}
+	
 	private void SelectSize(object sender, SelectionChangedEventArgs e)
 	{
-		if (collSizeSelection.SelectedItem == null)
-			return;
-		else
+		try
 		{
-			SizeTypeView s = (SizeTypeView)collSizeSelection.SelectedItem;
+		    if (e?.CurrentSelection == null || e.CurrentSelection.Count == 0)
+			    return;
+			
+			SizeTypeView? s = e.CurrentSelection[0] as SizeTypeView;
+			if (s == null)
+			    return;
 
-			if (s != null && s.Text == "Small")
+			if (s.Text == "Small")
 				MealSize = MenuSizeType.SMALL;
-			else if (s != null && s.Text == "Medium")
+			else if (s.Text == "Medium")
 				MealSize = MenuSizeType.MEDIUM;
-			else if (s != null && s.Text == "Large")
+			else if (s.Text == "Large")
 				MealSize = MenuSizeType.LARGE;
-		}
+		    else
+		        MealSize = MenuSizeType.SMALL;
 
-		RefreshCost();
+		    RefreshCost();
+		}
+		catch (Exception ex)
+		{
+		    System.Diagnostics.Debug.WriteLine($"SelectSize error: {ex.Message}");
+		    MealSize = MenuSizeType.SMALL;
+		}
 	}
 
 	void RefreshCost()
 	{
-		if (selectedEntree == null || selectedSide == null || selectedDrink == null)
+		try
 		{
-			lblCost.Text = "";
-			return;
+			bool itemsReady = selectedEntree != null && selectedSide != null && selectedDrink != null;
+
+			if (!itemsReady) 
+			{
+				if (lblCost != null)
+				    lblCost.Text = ""; 
+				return;
+			}
+
+			var combo = new Project.Models.ComboItem
+			{
+				Entree = selectedEntree!, 
+				Side = selectedSide!,
+				Drink = selectedDrink!
+			};
+
+			if (combo.Entree?.HasSize == true)
+				combo.Entree.Size = MealSize;
+			if (combo.Side?.HasSize == true)
+				combo.Side.Size = MealSize;
+			if (combo.Drink?.HasSize == true)
+				combo.Drink.Size = MealSize;
+
+			if (lblCost != null)
+			    lblCost.Text = $"{combo.GetCost():F2}";
 		}
-
-		var combo = new Project.Models.ComboItem
+		catch (Exception ex)
 		{
-			Entree = selectedEntree,
-			Side = selectedSide,
-			Drink = selectedDrink
-		};
-
-		if (combo.Entree.HasSize)
-			combo.Entree.Size = MealSize;
-		if (combo.Side.HasSize)
-			combo.Side.Size = MealSize;
-		if (combo.Drink.HasSize)
-			combo.Drink.Size = MealSize;
-
-		lblCost.Text = $"${combo.GetCost():F2}";
+		    System.Diagnostics.Debug.WriteLine($"RefreshCost error: {ex.Message}");
+		    if (lblCost != null)
+		        lblCost.Text = "Error";
+		}
 	}
 
 	private async void AddComboClicked(object sender, EventArgs e)
 	{
-		if (selectedEntree == null || selectedSide == null || selectedDrink == null)
+		try
 		{
-			await DisplayAlert("Error", "Error: You must select a combo, side, and drink.", "Ok");
-			return;
+			if (selectedEntree == null || selectedSide == null || selectedDrink == null)
+			{
+				await DisplayAlert("Error", "Error: You must select an entree, side, and drink.", "OK");
+				return;
+			}
+
+			var comboItem = new Project.Models.ComboItem
+			{
+				Entree = selectedEntree!, 
+				Side = selectedSide!,
+				Drink = selectedDrink!
+			};
+
+			if (comboItem.Entree?.HasSize == true) 
+			    comboItem.Entree.Size = MealSize;
+			if (comboItem.Side?.HasSize == true) 
+			    comboItem.Side.Size = MealSize;
+			if (comboItem.Drink?.HasSize == true) 
+			    comboItem.Drink.Size = MealSize;
+
+			if (App.Cart != null)
+			    App.Cart.AddItem(comboItem);
+			else
+			    throw new InvalidOperationException("Shopping cart is not initialized");
+
+			await Navigation.PopAsync(); 
+			System.Diagnostics.Debug.WriteLine("Completed PopAsync in AddComboClicked");
 		}
-
-		var comboItem = new Project.Models.ComboItem
+		catch (Exception ex)
 		{
-			Entree = selectedEntree,
-			Side = selectedSide,
-			Drink = selectedDrink
-		};
-
-		// Set sizes
-		if (comboItem.Entree.HasSize) comboItem.Entree.Size = MealSize;
-		if (comboItem.Side.HasSize) comboItem.Side.Size = MealSize;
-		if (comboItem.Drink.HasSize) comboItem.Drink.Size = MealSize;
-
-		App.Cart.AddItem(comboItem);
-
-		// Safely navigate back to main menu
-		Application.Current.Windows[0].Page = new MainMenuPage();
+			await DisplayAlert("Error", $"Failed to add combo: {ex.Message}", "OK");
+			System.Diagnostics.Debug.WriteLine($"AddComboClicked error: {ex}");
+		}
 	}
 
-		// If you have CancelComboClicked:
-	private void CancelComboClicked(object sender, EventArgs e)
+	private async void CancelComboClicked(object sender, EventArgs e)
 	{
-		
-		App.Current.Windows[0].Page= new MainMenuPage();
+		try
+		{
+			await Navigation.PopAsync(); 
+			System.Diagnostics.Debug.WriteLine("Completed PopAsync in CancelComboClicked");
+		}
+		catch (Exception ex)
+		{
+			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
+			System.Diagnostics.Debug.WriteLine($"CancelComboClicked error: {ex}");
+		}
 	}
-
-
-       
 }

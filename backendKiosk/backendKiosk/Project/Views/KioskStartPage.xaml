@@ -2,9 +2,50 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="backendKiosk.Project.Views.KioskStartPage"
-             Title="KioskStartPage">
-    <VerticalStackLayout>
-        <Entry Placeholder="Enter your Name..."/>
-        <Button Text="Start Order" Clicked="StartOrderButton"/>
-    </VerticalStackLayout>
+             Title="Welcome to Eagles Nest Restaurant"
+             BackgroundColor="#FFB75E5E">
+    
+    <ScrollView>
+        <Grid RowDefinitions="*, Auto, *">
+            <VerticalStackLayout Grid.Row="1"
+                                Spacing="25" 
+                                Padding="30,0" 
+                                VerticalOptions="Center">
+                
+                <Label Text="Eagles Nest Restaurant"
+                       SemanticProperties.HeadingLevel="Level1"
+                       FontSize="32"
+                       HorizontalOptions="Center" />
+                
+                <Label Text="Welcome to our self-ordering kiosk"
+                       SemanticProperties.HeadingLevel="Level2"
+                       SemanticProperties.Description="Welcome to our self-ordering kiosk"
+                       FontSize="18"
+                       HorizontalOptions="Center" />
+                
+                <Entry Placeholder="Enter your name..." 
+                       FontSize="18"
+                       Margin="0,20,0,0"/>
+                
+                <Button Text="Start Order" 
+                        Clicked="StartOrderButton"
+                        FontSize="20"
+                        BackgroundColor="#512BD4"
+                        TextColor="White"
+                        HeightRequest="60"
+                        WidthRequest="200"
+                        HorizontalOptions="Center" />
+                        
+                <Button Text="Admin Dashboard" 
+                        Clicked="AdminButton"
+                        FontSize="14"
+                        BackgroundColor="DarkGoldenrod"
+                        TextColor="White"
+                        HeightRequest="40"
+                        WidthRequest="150"
+                        HorizontalOptions="End"
+                        Margin="0,20,0,0" />
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>

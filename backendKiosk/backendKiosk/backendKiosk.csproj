@@ -62,6 +62,67 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.6" />
+		<PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.6" />
+		<PackageReference Include="SQLitePCLRaw.provider.sqlite3" Version="2.1.6" />
 	</ItemGroup>
+
+	<!-- Modify Mac Catalyst configuration to disable AOT compilation and code signing -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst'))">
+		<!-- Use RuntimeIdentifiers (plural) to support multiple architectures -->
+		<RuntimeIdentifiers>maccatalyst-arm64;maccatalyst-x64</RuntimeIdentifiers>
+		<CodesignEntitlements>Platforms/MacCatalyst/Entitlements.plist</CodesignEntitlements>
+		<EnableCodeSigning>False</EnableCodeSigning>
+		<CreatePackage>false</CreatePackage>
+		<!-- Disable AOT -->
+		<UseInterpreter>True</UseInterpreter>
+		<MtouchInterpreter>-all</MtouchInterpreter>
+		<AOTMode>None</AOTMode>
+		<IntermediateOutputPath>obj\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\temp</IntermediateOutputPath>
+	</PropertyGroup>
+
+	<!-- iOS development optimizations -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Debug'">
+		<!-- Use "SdkOnly" linking in Debug mode to speed up builds -->
+		<MtouchLink>SdkOnly</MtouchLink>
+		<!-- Disable full debug info to speed up build -->
+		<DebugType>portable</DebugType>
+		<!-- Enable incremental AOT -->
+		<MtouchUseLlvm>false</MtouchUseLlvm>
+	</PropertyGroup>
+
+	<!-- iOS Simulator specific optimizations -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Debug' and '$(RuntimeIdentifier)'=='ios-arm64-simulator'">
+		<!-- Enable interpreter mode for simulator builds -->
+		<UseInterpreter>true</UseInterpreter>
+		<!-- Skip linking for simulator builds -->
+		<MtouchNoSymbolStrip>true</MtouchNoSymbolStrip>
+		<!-- Reduce debug information in simulator builds -->
+		<MtouchDebug>true</MtouchDebug>
+		<MtouchProfiling>false</MtouchProfiling>
+	</PropertyGroup>
+
+	<!-- Global development optimizations -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<!-- Enable concurrent builds -->
+		<BuildInParallel>true</BuildInParallel>
+		<!-- Optimize incremental builds -->
+		<EnableIncrementalBuild>true</EnableIncrementalBuild>
+		<!-- Enable Fast XAML parsing and compilation -->
+		<EnableDefaultXamlItems>true</EnableDefaultXamlItems>
+		<!-- Set maximum CPU usage -->
+		<_MaxCpuCount>8</_MaxCpuCount>
+	</PropertyGroup>
+	
+	<!-- Android optimizations -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Debug'">
+		<!-- Disable AAPT during design-time builds -->
+		<AndroidUseAapt2>True</AndroidUseAapt2>
+		<!-- Skip unnecessary steps during design-time builds -->
+		<AndroidDexTool>d8</AndroidDexTool>
+		<!-- Enable Fast Deployment -->
+		<EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+	</PropertyGroup>
 
 </Project>

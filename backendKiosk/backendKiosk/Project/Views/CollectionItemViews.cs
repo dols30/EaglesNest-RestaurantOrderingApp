@@ -3,40 +3,43 @@ using MenuItem = backendKiosk.Project.Models.MenuItem;
 
 namespace backendKiosk.Project.Views
 {
-
     public class ComboItemView : BindableObject
     {
-        public MenuItem Item { get; set; }
+        // Make Item nullable to fix CS8618 warning
+        public MenuItem? Item { get; set; }
 
         public string ItemName
         {
             get
             {
-                return $"{Item.ItemName}\n${Item.GetCost():F2}";
+                // Add null check to fix CS8602 warning
+                return Item != null ? $"{Item.ItemName}\n${Item.GetCost():F2}" : string.Empty;
             }
         }
 
         public string Icon
         {
-            get { return Item.Icon; }
+            get { return Item?.Icon ?? string.Empty; }
         }
     }
 
     class ItemSelectView : BindableObject
     {
-        public MenuItem Item { get; set; }
+        // Make Item nullable to fix CS8618 warning
+        public MenuItem? Item { get; set; }
 
         public string ItemName
         {
             get
             {
-                return $"{Item.ItemName}\n${Item.GetCost():F2}";
+                // Add null check to fix CS8602 warning
+                return Item != null ? $"{Item.ItemName}\n${Item.GetCost():F2}" : string.Empty;
             }
         }
 
         public string Icon
         {
-            get { return Item.Icon; }
+            get { return Item?.Icon ?? string.Empty; }
         }
     }
 
@@ -48,31 +51,32 @@ namespace backendKiosk.Project.Views
 
     public partial class CartPopupItemView : BindableObject
     {
-        public CartItem Item { get; set; }
+        // Make Item nullable to fix CS8618 warning
+        public CartItem? Item { get; set; }
+        
         public string Detail
         {
-
             get
             {
-                if ((Item as backendKiosk.Project.Models.MenuItem) != null)
+                if (Item == null)
+                    return string.Empty;
+                    
+                if (Item is MenuItem menuItem)
                 {
-                    //output just name of item.
-                    return (Item as backendKiosk.Project.Models.MenuItem).ItemName;
-
+                    return menuItem.ItemName;
                 }
-                else if ((Item as backendKiosk.Project.Models.ComboItem) != null)
+                else if (Item is ComboItem comboItem)
                 {
-                    //output combo details
                     string ss = "";
                     ss += "** Combo **\n";
                     ss += " --> ";
-                    ss += (Item as backendKiosk.Project.Models.ComboItem).Entree.ItemName;
+                    ss += comboItem.Entree?.ItemName ?? "No entree";
                     ss += "\n";
                     ss += " --> ";
-                    ss += (Item as backendKiosk.Project.Models.ComboItem).Side.ItemName;
+                    ss += comboItem.Side?.ItemName ?? "No side";
                     ss += "\n";
                     ss += " --> ";
-                    ss += (Item as backendKiosk.Project.Models.ComboItem).Drink.ItemName;
+                    ss += comboItem.Drink?.ItemName ?? "No drink";
                     ss += "\n";
 
                     return ss;
@@ -86,7 +90,7 @@ namespace backendKiosk.Project.Views
         {
             get
             {
-                return $"${Item.GetCost():F2}";
+                return Item != null ? $"${Item.GetCost():F2}" : "$0.00";
             }
         }
     }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:backendKiosk.Project.Models"
+             x:Class="backendKiosk.Project.Views.MenuItemEditPage"
+             Title="{Binding PageTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+
+            <Label Text="{Binding PageTitle}" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" />
+
+            <!-- Form Fields -->
+            <Label Text="Item Name:" />
+            <Entry Text="{Binding CurrentMenuItem.ItemName}" Placeholder="Enter item name" />
+
+            <Label Text="Item Price:" />
+            <Entry Text="{Binding CurrentMenuItem.ItemPrice}" Keyboard="Numeric" Placeholder="Enter item price" />
+
+            <Label Text="Type:" />
+            <Picker Title="Select Type" ItemsSource="{Binding MenuItemTypes}" SelectedItem="{Binding SelectedMenuItemType}" />
+
+
+            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                <Label Text="Has Size Options:" VerticalOptions="Center"/>
+                <CheckBox IsChecked="{Binding CurrentMenuItem.HasSize}" />
+            </HorizontalStackLayout>
+
+            <Label Text="Icon Filename:" />
+            <Entry Text="{Binding CurrentMenuItem.Icon}" Placeholder="e.g., burger.png" />
+
+
+            <!-- Action Buttons -->
+            <Button Text="Save" Clicked="SaveButtonClicked" Margin="0,20,0,0"/>
+            <Button Text="Cancel" Clicked="CancelButtonClicked" BackgroundColor="Gray"/>
+             <Button Text="Delete" Clicked="OnDeleteClicked" BackgroundColor="Red" TextColor="White" IsVisible="{Binding IsEditMode}" Margin="0,5,0,0"/>
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

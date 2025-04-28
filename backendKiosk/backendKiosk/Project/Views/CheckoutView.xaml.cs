@@ -33,14 +33,41 @@ public partial class CheckoutView : ContentPage
         UpdateCost();
     }
 
-    private void ButtonSubmitOrder(object sender, EventArgs e)
+    private async void CompletePurchaseClicked(object sender, EventArgs e)
     {
-
+        try
+        {
+            // Process the order...
+            
+            // Clear the cart
+            App.Cart.ClearCart();
+            
+            await DisplayAlert("Success", "Your order has been placed successfully!", "OK");
+            
+            // Use PopModalAsync instead of Shell navigation to return to menu
+            await Navigation.PopModalAsync();
+            System.Diagnostics.Debug.WriteLine("Completed PopModalAsync in CompletePurchaseClicked");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Failed to complete purchase: {ex.Message}", "OK");
+            System.Diagnostics.Debug.WriteLine($"CompletePurchaseClicked error: {ex}");
+        }
     }
-
-    private void ButtonCancelCheckout(object sender, EventArgs e)
+    
+    private async void CancelClicked(object sender, EventArgs e)
     {
-        App.Current.Windows[0].Page = new MainMenuPage();
+        try
+        {
+            // Use PopModalAsync instead of Shell navigation to return to menu
+            await Navigation.PopModalAsync();
+            System.Diagnostics.Debug.WriteLine("Completed PopModalAsync in CancelClicked");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
+            System.Diagnostics.Debug.WriteLine($"CancelClicked error: {ex}");
+        }
     }
 
     private void UpdateMealCost(object sender, TextChangedEventArgs e)

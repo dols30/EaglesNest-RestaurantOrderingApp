@@ -7,15 +7,31 @@ public partial class KioskStartPage : ContentPage
 		InitializeComponent();
 	}
 
-    private void StartOrderButton(object sender, EventArgs e)
+    private async void StartOrderButton(object sender, EventArgs e)
     {
-		if (Application.Current?.Windows.Count > 0)
+		try
 		{
-			Application.Current.Windows[0].Page = new MainMenuPage();
+			// Simple navigation to the menu page
+			await Shell.Current.GoToAsync("///menu");
 		}
-		else
+		catch (Exception ex)
 		{
-			DisplayAlert("Error", "Navigation failed. Please try again.", "Ok");
+			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
+			System.Diagnostics.Debug.WriteLine($"Navigation error: {ex}");
+		}
+    }
+	
+	private async void AdminButton(object sender, EventArgs e)
+    {
+		try
+		{
+			// Simple navigation to the dashboard page
+			await Shell.Current.GoToAsync("///dashboard");
+		}
+		catch (Exception ex)
+		{
+			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
+			System.Diagnostics.Debug.WriteLine($"Navigation error: {ex}");
 		}
     }
 }

@@ -1,70 +1,108 @@
-﻿using System.Collections.ObjectModel;
+﻿/*
+I acknowledge the following statements:
+That the code I provide below is my own work and NOT copied from any outside resource, which includes, but not limited to, an artificial intelligence program unless given explicit permission by the instructor.
+That the code I provide below is my own work and NOT the work of my peers, tutors, or any other individual unless given explicit permission by the instructor.
+That if the code below is in violation of statements 1 and 2 above, I may be reported to the Academic Integrity office and subject to penalties as described in the Academic Integrity Policy.
+Your Name: Dol Raj Bashyal
+Your Student ID: w10169035
+*/
+using backendKiosk.Project.Data;
 using backendKiosk.Project.Models;
-using MenuItem = backendKiosk.Project.Models.MenuItem;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace backendKiosk.Project.Controllers
 {
     public class MenuController
     {
-        List<MenuItem> _menuItems;
+        private readonly MenuDatabase _database;
+        private ObservableCollection<backendKiosk.Project.Models.MenuItem> _menuItems = new ObservableCollection<backendKiosk.Project.Models.MenuItem>();
 
-        public MenuController()
+        public MenuController(MenuDatabase database)
         {
-            _menuItems = setup_menu();
+            _database = database;
         }
 
-        public List<MenuItem> GetItems(MenuItemType? type = null)
+        private async Task EnsureItemsLoaded()
         {
-            if (type == null)
-                return new List<MenuItem>(_menuItems);
-            else
+            if (!_menuItems.Any())
             {
-                var result = from item in _menuItems
-                             where item.Type == type
-                             select item;
-
-                return result.ToList();
+                await LoadMenuItemsAsync();
             }
         }
 
-        List<MenuItem> setup_menu()
+        public async Task LoadMenuItemsAsync()
         {
-            return new List<MenuItem>()
+            var items = await _database.GetItemsAsync();
+            _menuItems.Clear();
+            foreach (var item in items)
             {
-                new MenuItem { ItemName = "Seafood Alfredo", Type = MenuItemType.ENTREE, ItemPrice=15.95M},
-                new MenuItem { ItemName = "Chicken Alfredo", Type = MenuItemType.ENTREE, ItemPrice=13.95M },
-                new MenuItem { ItemName = "Chicken Picatta", Type = MenuItemType.ENTREE, ItemPrice=13.95M },
-                new MenuItem { ItemName = "Turkey Club", Type = MenuItemType.ENTREE, ItemPrice=11.95M },
-                new MenuItem { ItemName = "Lobster Pie", Type = MenuItemType.ENTREE, ItemPrice=19.95M },
-                new MenuItem { ItemName = "Prime Rib", Type = MenuItemType.ENTREE, ItemPrice=20.95M },
-                new MenuItem { ItemName = "Shrimp Scampi", Type = MenuItemType.ENTREE, ItemPrice=18.95M },
-                new MenuItem { ItemName = "Turkey Dinner", Type = MenuItemType.ENTREE, ItemPrice=13.95M },
-                new MenuItem { ItemName = "Stuffed Chicken", Type = MenuItemType.ENTREE, ItemPrice=14.95M },
-                new MenuItem { ItemName = "Classic Fries", Type = MenuItemType.SIDE, ItemPrice=1.95M, HasSize=true },
-                new MenuItem { ItemName = "Spicy Fries", Type = MenuItemType.SIDE, ItemPrice=2.50M, HasSize=true },
-                new MenuItem { ItemName = "Mashed Potatoes", Type = MenuItemType.SIDE, ItemPrice=1.95M, HasSize=true },
-                new MenuItem { ItemName = "Steamed Vegetables", Type = MenuItemType.SIDE, ItemPrice=2.50M, HasSize=true },
-                new MenuItem { ItemName = "Garden Salad", Type = MenuItemType.SIDE, ItemPrice=2.95M },
-                new MenuItem { ItemName = "Loaded Potatos", Type = MenuItemType.SIDE, ItemPrice=3.50M },
-                new MenuItem { ItemName = "Mac and Cheese", Type = MenuItemType.SIDE , ItemPrice=2.50M, HasSize=true },
-                new MenuItem { ItemName = "Soda", Type = MenuItemType.DRINK, ItemPrice=1.95M, HasSize=true },
-                new MenuItem { ItemName = "Tea", Type = MenuItemType.DRINK, ItemPrice=1.50M, HasSize=true },
-                new MenuItem { ItemName = "Coffee", Type = MenuItemType.DRINK, ItemPrice=1.25M, HasSize=true },
-                new MenuItem { ItemName = "Mineral Water", Type = MenuItemType.DRINK, ItemPrice=2.95M, HasSize=true },
-                new MenuItem { ItemName = "Juice", Type = MenuItemType.DRINK, ItemPrice=2.50M, HasSize=true },
-                new MenuItem { ItemName = "Buffalo Wings", Type = MenuItemType.APPETIZER, ItemPrice=15.95M },
-                new MenuItem { ItemName = "Buffalo Fingers", Type = MenuItemType.APPETIZER, ItemPrice=15.95M },
-                new MenuItem { ItemName = "Potato Skins", Type = MenuItemType.APPETIZER, ItemPrice=15.95M },
-                new MenuItem { ItemName = "Nachos", Type = MenuItemType.APPETIZER, ItemPrice=15.95M },
-                new MenuItem { ItemName = "Mushrooms Caps", Type = MenuItemType.APPETIZER, ItemPrice=15.95M },
-                new MenuItem { ItemName = "Shrimp Cocktail", Type = MenuItemType.APPETIZER, ItemPrice=15.95M },
-                new MenuItem { ItemName = "Chips and Salsa", Type = MenuItemType.APPETIZER, ItemPrice=15.95M },
-                new MenuItem { ItemName = "Apple Pie", Type = MenuItemType.DESSERT, ItemPrice=5.95M },
-                new MenuItem { ItemName = "Sundae", Type = MenuItemType.DESSERT, ItemPrice=3.95M },
-                new MenuItem { ItemName = "Carrot Cake", Type = MenuItemType.DESSERT, ItemPrice=5.95M },
-                new MenuItem { ItemName = "Mud Pie", Type = MenuItemType.DESSERT , ItemPrice=4.95M },
-                new MenuItem { ItemName = "Apple Crisp", Type = MenuItemType.DESSERT, ItemPrice=5.95M }
-            };
+                _menuItems.Add(item);
+            }
         }
+
+        public async Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> GetMenuItemsAsync()
+        {
+            await EnsureItemsLoaded();
+            return _menuItems;
+        }
+
+        public async Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> GetItemsByTypeAsync(MenuItemType type)
+        {
+            await EnsureItemsLoaded();
+            return new ObservableCollection<backendKiosk.Project.Models.MenuItem>(_menuItems.Where(item => item.Type == type));
+        }
+
+        public async Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> GetEntrees() => await GetItemsByTypeAsync(MenuItemType.ENTREE);
+        public async Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> GetSides() => await GetItemsByTypeAsync(MenuItemType.SIDE);
+        public async Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> GetDrinks() => await GetItemsByTypeAsync(MenuItemType.DRINK);
+        public async Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> GetDesserts() => await GetItemsByTypeAsync(MenuItemType.DESSERT);
+        public async Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> GetAppetizers() => await GetItemsByTypeAsync(MenuItemType.APPETIZER);
+
+
+        public async Task AddItemAsync(backendKiosk.Project.Models.MenuItem item)
+        {
+            await _database.SaveItemAsync(item);
+            _menuItems.Add(item);
+        }
+
+        public async Task UpdateItemAsync(backendKiosk.Project.Models.MenuItem item)
+        {
+            await _database.SaveItemAsync(item);
+            var existingItem = _menuItems.FirstOrDefault(mi => mi.DatabaseID == item.DatabaseID);
+            if (existingItem != null)
+            {
+                int index = _menuItems.IndexOf(existingItem);
+                _menuItems[index] = item;
+            }
+        }
+
+        public async Task DeleteItemAsync(backendKiosk.Project.Models.MenuItem item)
+        {
+            await _database.DeleteItemAsync(item);
+            _menuItems.Remove(item);
+        }
+
+         public async Task<backendKiosk.Project.Models.MenuItem> GetItemByIdAsync(int id)
+        {
+             return await _database.GetItemAsync(id);
+        }
+
+        // Add backward compatibility methods for existing code
+        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetItems(MenuItemType type)
+        {
+            // Create a task and wait for it to complete to convert async to sync
+            Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> task = GetItemsByTypeAsync(type);
+            task.Wait();
+            return task.Result;
+        }
+
+        // For compatibility with existing code
+        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetEntreeItems() => GetItems(MenuItemType.ENTREE);
+        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetSideItems() => GetItems(MenuItemType.SIDE);
+        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetDrinkItems() => GetItems(MenuItemType.DRINK);
+        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetDessertItems() => GetItems(MenuItemType.DESSERT);
+        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetAppetizerItems() => GetItems(MenuItemType.APPETIZER);
     }
 }

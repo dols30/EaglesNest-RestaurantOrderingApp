@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SQLite;
 
 namespace backendKiosk.Project.Models
 {
@@ -23,44 +24,85 @@ namespace backendKiosk.Project.Models
         }
     }
 
-    public class MenuItem: CartItem
+    public class MenuItem : CartItem 
     {
+        [PrimaryKey, AutoIncrement] 
+        public int DatabaseID { get; set; }
+
+        // Remove 'required' modifier to make SQLite happy
+        public string ItemName { get; set; } = string.Empty;
+        public double ItemPrice { get; set; }
+        public bool HasSize { get; set; }
+
+        public int SizeInt { get; set; }
+        public int TypeInt { get; set; }
+
+        [Ignore] 
+        public MenuSizeType Size
+        {
+            get => (MenuSizeType)SizeInt;
+            set => SizeInt = (int)value;
+        }
+
+        [Ignore] 
+        public MenuItemType Type
+        {
+            get => (MenuItemType)TypeInt;
+            set => TypeInt = (int)value;
+        }
+
+        // Remove 'required' modifier and initialize with empty string
+        public string Icon { get; set; } = string.Empty;
+
         public static decimal MEDIUM_RATE = 0.25M;
         public static decimal LARGE_RATE = 0.75M;
-        public int DatabaseID { get; set; } = 0;
-        public string ItemName { get; set; } = "NA";
-        public decimal ItemPrice { get; set; } = 0.0M;
-        public bool HasSize { get; set; } = false;
-        public MenuSizeType Size{ get; set; } = MenuSizeType.SMALL;
-        public MenuItemType Type { get; set; } = MenuItemType.ENTREE;
-        public string Icon { get; set; } = "eagle.png";
 
         public override decimal GetCost()
         {
             if (!HasSize)
-                return ItemPrice;
+                return (decimal)ItemPrice;
             else
             {
                 if (Size == MenuSizeType.SMALL)
-                    return ItemPrice;
+                    return (decimal)ItemPrice;
                 else if (Size == MenuSizeType.MEDIUM)
-                    return ItemPrice + ItemPrice * MEDIUM_RATE;
+                    return (decimal)ItemPrice + (decimal)ItemPrice * MEDIUM_RATE;
                 else
-                    return ItemPrice + ItemPrice * LARGE_RATE;
+                    return (decimal)ItemPrice + (decimal)ItemPrice * LARGE_RATE;
             }
         }
 
+        // Constructor
+        public MenuItem(string name, double price, MenuItemType type, string icon, bool hasSize = false)
+        {
+            ItemName = name;
+            ItemPrice = price;
+            Type = type;
+            Icon = icon;
+            HasSize = hasSize;
+            Size = MenuSizeType.SMALL;
+        }
+
+        // Default constructor needed by SQLite
+        public MenuItem() 
+        { 
+            // Initialization already done via property initializers
+        }
+
+
+        // DeepCopy method
         public MenuItem DeepCopy()
         {
-            MenuItem menu = new MenuItem();
-            menu.DatabaseID = DatabaseID;
-            menu.ItemName = ItemName;
-            menu.ItemPrice = ItemPrice;
-            menu.HasSize = HasSize;
-            menu.Size = Size;
-            menu.Type = Type;
-            menu.Icon = Icon;
-            return menu;
+            return new MenuItem
+            {
+                DatabaseID = this.DatabaseID,
+                ItemName = this.ItemName,
+                ItemPrice = this.ItemPrice,
+                HasSize = this.HasSize,
+                SizeInt = this.SizeInt,
+                TypeInt = this.TypeInt,
+                Icon = this.Icon
+            };
         }
     }
 

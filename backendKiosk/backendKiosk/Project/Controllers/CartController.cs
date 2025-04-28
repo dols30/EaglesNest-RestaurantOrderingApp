@@ -30,5 +30,11 @@ namespace backendKiosk.Project.Controllers
         {
             return new ObservableCollection<CartItem>(CartItems);
         }
+        
+        // Add ClearCart method to clear all items from the cart
+        public void ClearCart()
+        {
+            CartItems.Clear();
+        }
     }
 }

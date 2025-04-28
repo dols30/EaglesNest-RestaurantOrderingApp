@@ -3,6 +3,22 @@
     "Windows Machine": {
       "commandName": "Project",
       "nativeDebugging": false
+    },
+    "macOS Development": {
+      "commandName": "Project",
+      "nativeDebugging": false,
+      "environmentVariables": {
+        "DOTNET_EnableWriteXorExecute": "0",
+        "DOTNET_JitDisasm": "0",
+        "DOTNET_ReadyToRun": "0"
+      }
+    },
+    "iOS Simulator (Fast)": {
+      "commandName": "Project",
+      "nativeDebugging": false,
+      "environmentVariables": {
+        "DOTNET_EnableWriteXorExecute": "0"
+      }
     }
   }
 }

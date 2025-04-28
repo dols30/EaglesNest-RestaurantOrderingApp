@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:backendKiosk.Project.Models"
+             x:Class="backendKiosk.Project.Views.MenuDashboardPage"
+             Title="Menu Dashboard">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="10" Spacing="10">
+
+            <Label Text="Menu Item Management" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" />
+
+            <!-- Filtering Section -->
+            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="5" RowSpacing="5">
+                <SearchBar x:Name="SearchBarName" Placeholder="Filter by Name..." TextChanged="OnFilterChanged" Grid.ColumnSpan="3" Grid.Row="0"/>
+
+                <Picker x:Name="PickerType" Title="Filter by Type" SelectedIndexChanged="OnFilterChanged" Grid.Column="0" Grid.Row="1">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>All</x:String>
+                            <x:String>Entree</x:String>
+                            <x:String>Side</x:String>
+                            <x:String>Drink</x:String>
+                            <x:String>Dessert</x:String>
+                            <x:String>Appetizer</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                     <Picker.SelectedIndex>0</Picker.SelectedIndex>
+                </Picker>
+
+                <HorizontalStackLayout Grid.Column="1" Grid.Row="1" Spacing="5" VerticalOptions="Center">
+                     <Label Text="Allows Sizing:" VerticalOptions="Center"/>
+                     <CheckBox x:Name="CheckBoxHasSize" CheckedChanged="OnFilterChanged" />
+                </HorizontalStackLayout>
+
+                 <Button Text="Clear Filters" Clicked="OnClearFiltersClicked" Grid.Column="2" Grid.Row="1" />
+
+            </Grid>
+
+            <!-- Menu Items List -->
+            <CollectionView x:Name="MenuItemsCollectionView"
+                            ItemsSource="{Binding MenuItems}"
+                            SelectionMode="Single"
+                            SelectionChanged="OnItemSelected"
+                            HeightRequest="400">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label Text="No menu items found." FontSize="Medium" TextColor="Gray" />
+                        <Label Text="Items will appear here once added." FontSize="Small" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:MenuItem">
+                        <Grid Padding="10" ColumnDefinitions="*,Auto,Auto,Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="{Binding ItemName}" FontAttributes="Bold" />
+                                <Label Text="{Binding ItemPrice, StringFormat='Price: {0:C}'}" />
+                                <Label Text="{Binding Type, StringFormat='Type: {0}'}" />
+                                <Label Text="{Binding HasSize, StringFormat='Has Size: {0}'}" />
+                            </VerticalStackLayout>
+                            <Button Text="Edit" Clicked="OnEditClicked" CommandParameter="{Binding .}" Grid.Column="1" Margin="5,0"/>
+                            <Button Text="Remove" Clicked="OnRemoveClicked" CommandParameter="{Binding .}" Grid.Column="2" BackgroundColor="Red" TextColor="White"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Add Button -->
+            <Button Text="Add New Menu Item" Clicked="OnAddItemClicked" HorizontalOptions="FillAndExpand" Margin="0,10,0,0"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

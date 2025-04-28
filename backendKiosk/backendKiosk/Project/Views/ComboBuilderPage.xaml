@@ -95,106 +95,108 @@
         </Style>-->
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="100, *, 300" Padding="10">
-        <Label Text="Build a Combo" Style="{x:StaticResource AppTitleBar}"/>
+    <ScrollView>
+        <Grid RowDefinitions="100, *, 300" Padding="10">
+            <Label Text="Build a Combo" Style="{x:StaticResource AppTitleBar}"/>
 
-        <ScrollView Grid.Row="1" VerticalOptions="Start">
-            <Grid RowDefinitions="*, *, *" HeightRequest="950">
-                <Border Style="{x:StaticResource ListShape}" Grid.Row="0">
-                    <VerticalStackLayout>
-                        <Label Text="1. Select an Entree" Style="{x:StaticResource ComboBuilderSubHeader}"/>
-                        <CollectionView x:Name="collEntreeSelection" Style="{x:StaticResource ComboBuilderColl}" SelectionChanged="SelectEntree">
+            <ScrollView Grid.Row="1" VerticalOptions="Start">
+                <Grid RowDefinitions="*, *, *" HeightRequest="950">
+                    <Border Style="{x:StaticResource ListShape}" Grid.Row="0">
+                        <VerticalStackLayout>
+                            <Label Text="1. Select an Entree" Style="{x:StaticResource ComboBuilderSubHeader}"/>
+                            <CollectionView x:Name="collEntreeSelection" Style="{x:StaticResource ComboBuilderColl}" SelectionChanged="SelectEntree">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Horizontal"/>
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <VerticalStackLayout Style="{x:StaticResource ComboBuilderItemLayout}">
+                                            <Image Source="{Binding Icon}" Style="{x:StaticResource ComboBuilderItemImage}"/>
+                                            <Label Text="{Binding ItemName}" Style="{x:StaticResource ComboBuilderItemText}"/>
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Style="{x:StaticResource ListShape}" Grid.Row="1">
+                        <VerticalStackLayout>
+                            <Label Text="2. Select a Side"  Style="{x:StaticResource ComboBuilderSubHeader}"/>
+                            <CollectionView x:Name="collSideSelection" Style="{x:StaticResource ComboBuilderColl}" SelectionChanged="SelectSide">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Horizontal"/>
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <VerticalStackLayout Style="{x:StaticResource ComboBuilderItemLayout}">
+                                            <Image Source="{Binding Icon}" Style="{x:StaticResource ComboBuilderItemImage}"/>
+                                            <Label Text="{Binding ItemName}"  Style="{x:StaticResource ComboBuilderItemText}"/>
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Style="{x:StaticResource ListShape}" Grid.Row="2">
+                        <VerticalStackLayout>
+                            <Label Text="3. Select a Drink"  Style="{x:StaticResource ComboBuilderSubHeader}"/>
+                            <CollectionView x:Name="collDrinkSelection" Style="{x:StaticResource ComboBuilderColl}" SelectionChanged="SelectDrink">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Horizontal"/>
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <VerticalStackLayout Style="{x:StaticResource ComboBuilderItemLayout}">
+                                            <Image Source="{Binding Icon}" Style="{x:StaticResource ComboBuilderItemImage}"/>
+                                            <Label Text="{Binding ItemName}"  Style="{x:StaticResource ComboBuilderItemText}"/>
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </ScrollView>
+            <Border Grid.Row="2" Padding="10" Stroke="#000" StrokeThickness="5">
+                <Grid RowDefinitions="*" ColumnDefinitions="*, 250">
+                    <VerticalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Label Text="3. Select your Size" Style="{x:StaticResource ComboBuilderSubHeader}"/>
+                        <CollectionView x:Name="collSizeSelection" SelectionMode="Single"
+                                        HorizontalOptions="Center" SelectionChanged="SelectSize">
                             <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal"/>
+                                <LinearItemsLayout Orientation="Horizontal"  ItemSpacing="10"/>
                             </CollectionView.ItemsLayout>
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <VerticalStackLayout Style="{x:StaticResource ComboBuilderItemLayout}">
-                                        <Image Source="{Binding Icon}" Style="{x:StaticResource ComboBuilderItemImage}"/>
-                                        <Label Text="{Binding ItemName}" Style="{x:StaticResource ComboBuilderItemText}"/>
-                                    </VerticalStackLayout>
+                                    <Border Stroke="#000" StrokeThickness="5" WidthRequest="120" HeightRequest="100"
+                                            Style="{x:StaticResource SizeSelectorItemLayout}">
+                                        <VerticalStackLayout>
+                                            <Label Text="{Binding Text}" HorizontalOptions="Center" VerticalOptions="Center"
+                                                    FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center"/>
+                                            <Label Text="{Binding Rate}" HorizontalOptions="Center" VerticalOptions="Center"
+                                                    FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center"/>
+                                        </VerticalStackLayout>
+                                    </Border>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
+                        <Button Grid.Row="5" Text="Add to Order" FontSize="30" BackgroundColor="LightGreen" TextColor="DarkGreen"
+                        HorizontalOptions="Center" VerticalOptions="Center" Clicked="AddComboClicked"
+                        WidthRequest="300" HeightRequest="80"/>
                     </VerticalStackLayout>
-                </Border>
-                <Border Style="{x:StaticResource ListShape}" Grid.Row="1">
-                    <VerticalStackLayout>
-                        <Label Text="2. Select a Side"  Style="{x:StaticResource ComboBuilderSubHeader}"/>
-                        <CollectionView x:Name="collSideSelection" Style="{x:StaticResource ComboBuilderColl}" SelectionChanged="SelectSide">
-                            <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal"/>
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <VerticalStackLayout Style="{x:StaticResource ComboBuilderItemLayout}">
-                                        <Image Source="{Binding Icon}" Style="{x:StaticResource ComboBuilderItemImage}"/>
-                                        <Label Text="{Binding ItemName}"  Style="{x:StaticResource ComboBuilderItemText}"/>
-                                    </VerticalStackLayout>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                    <Border Grid.Column="1" Stroke="#000" StrokeThickness="6" BackgroundColor="LightBlue">
+                    <VerticalStackLayout Spacing="30" VerticalOptions="Center">
+                        <Label Text="Total" HorizontalOptions="Center" FontSize="50" FontAttributes="Bold" TextColor="DarkBlue"/>
+                        <Label Text="" HorizontalOptions="Center" FontSize="30" TextColor="DarkBlue" 
+                               x:Name="lblCost" FontAttributes="Bold"/>
                     </VerticalStackLayout>
-                </Border>
-                <Border Style="{x:StaticResource ListShape}" Grid.Row="2">
-                    <VerticalStackLayout>
-                        <Label Text="3. Select a Drink"  Style="{x:StaticResource ComboBuilderSubHeader}"/>
-                        <CollectionView x:Name="collDrinkSelection" Style="{x:StaticResource ComboBuilderColl}" SelectionChanged="SelectDrink">
-                            <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal"/>
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <VerticalStackLayout Style="{x:StaticResource ComboBuilderItemLayout}">
-                                        <Image Source="{Binding Icon}" Style="{x:StaticResource ComboBuilderItemImage}"/>
-                                        <Label Text="{Binding ItemName}"  Style="{x:StaticResource ComboBuilderItemText}"/>
-                                    </VerticalStackLayout>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </VerticalStackLayout>
-                </Border>
-            </Grid>
-        </ScrollView>
-        <Border Grid.Row="2" Padding="10" Stroke="#000" StrokeThickness="5">
-            <Grid RowDefinitions="*" ColumnDefinitions="*, 250">
-                <VerticalStackLayout Spacing="10" VerticalOptions="Center">
-                    <Label Text="3. Select your Size" Style="{x:StaticResource ComboBuilderSubHeader}"/>
-                    <CollectionView x:Name="collSizeSelection" SelectionMode="Single"
-                                    HorizontalOptions="Center" SelectionChanged="SelectSize">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal"  ItemSpacing="10"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Border Stroke="#000" StrokeThickness="5" WidthRequest="120" HeightRequest="100"
-                                        Style="{x:StaticResource SizeSelectorItemLayout}">
-                                    <VerticalStackLayout>
-                                        <Label Text="{Binding Text}" HorizontalOptions="Center" VerticalOptions="Center"
-                                                FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center"/>
-                                        <Label Text="{Binding Rate}" HorizontalOptions="Center" VerticalOptions="Center"
-                                                FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center"/>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                    <Button Grid.Row="5" Text="Add to Order" FontSize="30" BackgroundColor="LightGreen" TextColor="DarkGreen"
-                    HorizontalOptions="Center" VerticalOptions="Center" Clicked="AddComboClicked"
-                    WidthRequest="300" HeightRequest="80"/>
-                </VerticalStackLayout>
-                <Border Grid.Column="1" Stroke="#000" StrokeThickness="6" BackgroundColor="LightBlue">
-                <VerticalStackLayout Spacing="30" VerticalOptions="Center">
-                    <Label Text="Total" HorizontalOptions="Center" FontSize="50" FontAttributes="Bold" TextColor="DarkBlue"/>
-                    <Label Text="" HorizontalOptions="Center" FontSize="30" TextColor="DarkBlue" 
-                           x:Name="lblCost" FontAttributes="Bold"/>
-                </VerticalStackLayout>
-                </Border>
-            </Grid>
+                    </Border>
+                </Grid>
 
 
-        </Border>
+            </Border>
 
-    </Grid>
+        </Grid>
+    </ScrollView>
 
 </ContentPage>
