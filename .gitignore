@@ -1,7 +1,22 @@
-# MAUI .gitignore
-bin/
-obj/
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio / MAUI files
 .vs/
-.vscode/
 *.user
+*.suo
+*.userprefs
+*.usertasks
+*.pidb
+*.ide
+.vscode/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.ionide
+
+# macOS specific files
 .DS_Store
