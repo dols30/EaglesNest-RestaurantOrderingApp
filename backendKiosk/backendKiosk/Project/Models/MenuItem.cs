@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,14 +13,15 @@ namespace backendKiosk.Project.Models
     public abstract class CartItem
     {
         private static int _idCounter = 0;
-        private static int _id;
+        private readonly int _id;
         public abstract decimal GetCost();
 
-        public int ID {  get { return _id; } }
+        [Ignore]
+        public int ID => _id;
 
         public CartItem()
         {
-            _id = _idCounter++;
+            _id = System.Threading.Interlocked.Increment(ref _idCounter);
         }
     }
 

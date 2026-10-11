@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,6 +11,8 @@ namespace backendKiosk.Project.Controllers
 {
     public class CartController
     {
+        public string CustomerName { get; set; } = "";
+
         private List<CartItem> CartItems { get; set; } = new List<CartItem>();
 
         public void AddItem(CartItem item)
@@ -35,6 +37,7 @@ namespace backendKiosk.Project.Controllers
         public void ClearCart()
         {
             CartItems.Clear();
+            CustomerName = "";
         }
     }
 }

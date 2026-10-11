@@ -18,5 +18,5 @@ public static class DatabaseConstants
         SQLite.SQLiteOpenFlags.SharedCache;
 
     public static string DatabasePath =>
-        Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
+        Path.Combine(Environment.GetEnvironmentVariable("EAGLESNEST_DATA_DIR") ?? FileSystem.AppDataDirectory, DatabaseFilename);
 }

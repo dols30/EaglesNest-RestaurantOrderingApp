@@ -1,95 +1,53 @@
-using System.Collections.ObjectModel;
+using backendKiosk.Project.Models;
 
 namespace backendKiosk.Project.Views;
 
 public partial class CheckoutView : ContentPage
 {
-    ObservableCollection<CartPopupItemView> view_items;
-    public const Decimal TAX_RATE = 0.07M;
-    Decimal _tax = 0.0M;
-    Decimal _subTotal = 0.0M;
-    Decimal _mealCost = 0.0M;
-    Decimal _tip_amount = 0.0M;
+    private readonly decimal _subtotal;
+    private bool _submitting;
 
     public CheckoutView()
     {
         InitializeComponent();
-
-
-        view_items = new();
-
-        var controller_items = App.Cart.GetCartItems();
-
-        foreach (var item in controller_items)
-        {
-            CartPopupItemView cartPopupItemView = new CartPopupItemView();
-            cartPopupItemView.Item = item;
-            view_items.Add(cartPopupItemView);
-            _subTotal += item.GetCost();
-        }
-
-        collCheckoutCart.ItemsSource = view_items;
-
+        var items = App.Cart.GetCartItems();
+        collCheckoutCart.ItemsSource = items.Select(item => new CartPopupItemView { Item = item }).ToList();
+        _subtotal = items.Sum(item => item.GetCost());
         UpdateCost();
+    }
+
+    private void UpdateMealCost(object sender, TextChangedEventArgs e) => UpdateCost();
+
+    private void UpdateCost()
+    {
+        // TextChanged can fire during InitializeComponent, before all names exist.
+        if (SubmitButton is null || TipError is null) return;
+        var valid = OrderTotals.TryParseTip(txtTip.Text, out var tip);
+        OrderTotals totals;
+        try { totals = OrderTotals.Calculate(_subtotal, valid ? tip : 0); }
+        catch (OverflowException) { valid = false; totals = OrderTotals.Calculate(_subtotal, 0); }
+        lblSubTotal.Text = $"${totals.Subtotal:F2}";
+        lblTax.Text = $"${totals.Tax:F2}";
+        lblMealCost.Text = $"${totals.Total:F2}";
+        TipError.IsVisible = !valid;
+        SubmitButton.IsEnabled = valid && _subtotal > 0 && !_submitting;
     }
 
     private async void CompletePurchaseClicked(object sender, EventArgs e)
     {
+        if (_submitting || !SubmitButton.IsEnabled) return;
+        _submitting = true;
+        SubmitButton.IsEnabled = false;
         try
         {
-            // Process the order...
-            
-            // Clear the cart
+            await DisplayAlert("Thank you!", "Your demo order is complete. No payment has been collected.", "Done");
             App.Cart.ClearCart();
-            
-            await DisplayAlert("Success", "Your order has been placed successfully!", "OK");
-            
-            // Use PopModalAsync instead of Shell navigation to return to menu
             await Navigation.PopModalAsync();
-            System.Diagnostics.Debug.WriteLine("Completed PopModalAsync in CompletePurchaseClicked");
+            await Shell.Current.GoToAsync("///welcome");
         }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"Failed to complete purchase: {ex.Message}", "OK");
-            System.Diagnostics.Debug.WriteLine($"CompletePurchaseClicked error: {ex}");
-        }
-    }
-    
-    private async void CancelClicked(object sender, EventArgs e)
-    {
-        try
-        {
-            // Use PopModalAsync instead of Shell navigation to return to menu
-            await Navigation.PopModalAsync();
-            System.Diagnostics.Debug.WriteLine("Completed PopModalAsync in CancelClicked");
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
-            System.Diagnostics.Debug.WriteLine($"CancelClicked error: {ex}");
-        }
+        catch (Exception ex) { await DisplayAlert("Unable to complete order", ex.Message, "OK"); }
+        finally { _submitting = false; UpdateCost(); }
     }
 
-    private void UpdateMealCost(object sender, TextChangedEventArgs e)
-    {
-        try
-        {
-           _tip_amount = Convert.ToDecimal(txtTip.Text);
-            UpdateCost();
-        }
-        catch (Exception ex)
-        {
-            return;
-        }
-    }
-
-    private void UpdateCost()
-    {
-        _tax = _subTotal * TAX_RATE;
-        _mealCost = _subTotal + _tax + _tip_amount;
-
-        lblSubTotal.Text = $"${_subTotal:F2}";
-        lblTax.Text = $"${_tax:F2}";
-        lblMealCost.Text = $"${_mealCost:F2}";
-    }
+    private async void CancelClicked(object sender, EventArgs e) => await Navigation.PopModalAsync();
 }

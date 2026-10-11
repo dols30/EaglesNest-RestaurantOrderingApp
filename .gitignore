@@ -4,3 +4,7 @@
 
 # Ignore user-specific files
 *.user
+
+# Local QA data and macOS metadata
+.tmp/
+.DS_Store

@@ -1,4 +1,3 @@
-using backendKiosk.Project.Controllers;
 using backendKiosk.Project.Models;
 using System.Collections.ObjectModel;
 
@@ -6,258 +5,101 @@ namespace backendKiosk.Project.Views;
 
 public partial class MainMenuPage : ContentPage
 {
-	bool CartShown = true;
-	ObservableCollection<CartPopupItemView> view_items;
+    private readonly ObservableCollection<CartPopupItemView> _items = new();
+    private bool _navigating;
 
-	public MainMenuPage()
-	{
-		try
-		{
-			InitializeComponent();
-			collCart.IsVisible = true;
+    public MainMenuPage()
+    {
+        InitializeComponent();
+        collCart.ItemsSource = _items;
+        SizeChanged += (_, _) => UpdateLayout();
+    }
 
-			view_items = new();
-			
-			RefreshCart();
-			
-			System.Diagnostics.Debug.WriteLine("MainMenuPage initialized successfully");
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"Error initializing MainMenuPage: {ex}");
-		}
-	}
-    
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        try
-        {
-            RefreshCart();
-            System.Diagnostics.Debug.WriteLine("MainMenuPage OnAppearing - RefreshCart called");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error in OnAppearing: {ex}");
-        }
+        WelcomeLabel.Text = string.IsNullOrWhiteSpace(App.Cart.CustomerName)
+            ? "Welcome! What are you craving?"
+            : $"Welcome, {App.Cart.CustomerName}! What are you craving?";
+        RefreshCart();
+        UpdateLayout();
     }
-    
+
+    private void UpdateLayout()
+    {
+        if (Width <= 0) return;
+        bool narrow = Width < 780;
+        MenuHeading.FontSize = Width < 500 ? 24 : 32;
+        ManageButton.FontSize = Width < 500 ? 13 : 15;
+        MenuLayout.ColumnSpacing = narrow ? 0 : 24;
+        PageScroll.Orientation = narrow ? ScrollOrientation.Vertical : ScrollOrientation.Neither;
+        MenuScroll.Orientation = narrow ? ScrollOrientation.Neither : ScrollOrientation.Vertical;
+        PageGrid.HeightRequest = narrow ? -1 : Height;
+        PageGrid.RowDefinitions[1].Height = narrow ? GridLength.Auto : GridLength.Star;
+        MenuLayout.ColumnDefinitions[1].Width = narrow ? new GridLength(0) : new GridLength(300);
+        Grid.SetColumn(CartPanel, narrow ? 0 : 1);
+        Grid.SetRow(CartPanel, narrow ? 1 : 0);
+        CartPanel.HeightRequest = narrow ? 360 : -1;
+        ComboPhoto.IsVisible = Width >= 580;
+        ComboBanner.ColumnDefinitions[1].Width = Width < 580 ? new GridLength(0) : new GridLength(0.8, GridUnitType.Star);
+        bool phone = Width < 500;
+        CategoriesGrid.ColumnSpacing = phone ? 0 : 12;
+        CategoriesGrid.ColumnDefinitions[1].Width = phone ? new GridLength(0) : GridLength.Star;
+        Grid.SetColumn(SideCategory, phone ? 0 : 1);
+        Grid.SetRow(SideCategory, phone ? 1 : 0);
+        Grid.SetRow(DrinkCategory, phone ? 2 : 1);
+        Grid.SetColumn(DessertCategory, phone ? 0 : 1);
+        Grid.SetRow(DessertCategory, phone ? 3 : 1);
+        Grid.SetRow(AppetizerCategory, phone ? 4 : 2);
+        Grid.SetColumnSpan(AppetizerCategory, phone ? 1 : 2);
+        // Keep the menu and order independently scrollable on a small kiosk.
+        MenuLayout.RowDefinitions[0].Height = narrow ? GridLength.Auto : GridLength.Star;
+    }
+
     private void RefreshCart()
     {
-        try
-        {
-            if (view_items == null)
-            {
-                view_items = new ObservableCollection<CartPopupItemView>();
-            }
-            
-            view_items.Clear();
-            
-            if (App.Cart == null)
-            {
-                System.Diagnostics.Debug.WriteLine("App.Cart is null in RefreshCart!");
-                return;
-            }
-            
-            var controller_items = App.Cart.GetCartItems();
-            System.Diagnostics.Debug.WriteLine($"Cart items count: {controller_items?.Count ?? 0}");
-
-            foreach (var item in controller_items)
-            {
-                CartPopupItemView cartPopupItemView = new CartPopupItemView();
-                cartPopupItemView.Item = item;
-                view_items.Add(cartPopupItemView);
-            }
-
-            if (collCart != null)
-            {
-                collCart.ItemsSource = view_items;
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("collCart is null in RefreshCart!");
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"RefreshCart error: {ex}");
-            MainThread.BeginInvokeOnMainThread(async () => {
-                await DisplayAlert("Error", $"Failed to refresh cart: {ex.Message}", "OK");
-            });
-        }
+        collCart.SelectedItem = null;
+        _items.Clear();
+        foreach (var item in App.Cart.GetCartItems()) _items.Add(new CartPopupItemView { Item = item });
+        CartCountLabel.Text = $"{_items.Count} {(_items.Count == 1 ? "item" : "items")}";
+        CartSubtotalLabel.Text = $"${App.Cart.GetCartItems().Sum(i => i.GetCost()):F2}";
+        CheckoutButton.IsEnabled = _items.Count > 0;
+        DeleteButton.IsEnabled = false;
     }
 
-	private void ButtonToggleCart(object sender, EventArgs e)
-	{
-		try
-		{
-			if (CartShown)
-			{
-				CartShown = false;
-				grdPageFrame.ColumnDefinitions[1].Width = 80;
-				collCart.IsVisible = false;
-				layoutCartControls.IsVisible = false;
-			}
-			else
-			{
-				CartShown = true;
-				grdPageFrame.ColumnDefinitions[1].Width = 300;
-				collCart.IsVisible = true;
-				layoutCartControls.IsVisible = true;
-			}
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ButtonToggleCart error: {ex}");
-		}
-	}
+    private void CartSelectionChanged(object sender, SelectionChangedEventArgs e) => DeleteButton.IsEnabled = e.CurrentSelection.Count > 0;
 
-	private async void ButtonBuildCombo(object sender, EventArgs e)
-	{
-		try
-		{
-			System.Diagnostics.Debug.WriteLine("ButtonBuildCombo clicked - creating new ComboBuilderPage");
-			// Create and display ComboBuilderPage directly
-			var comboPage = new ComboBuilderPage();
-			// Try non-modal navigation
-			await Navigation.PushAsync(comboPage); 
-			System.Diagnostics.Debug.WriteLine("Navigation to ComboBuilderPage complete");
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ButtonBuildCombo error: {ex}");
-			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
-		}
-	}
+    private void ButtonDeleteCartItems(object sender, EventArgs e)
+    {
+        if (collCart.SelectedItem is CartPopupItemView { Item: not null } selected)
+            App.Cart.RemoveItem(selected.Item.ID);
+        RefreshCart();
+    }
 
-	private void ButtonDeleteCartItems(object sender, EventArgs e)
-	{
-		try
-		{
-			ObservableCollection<CartPopupItemView> selected = new();
+    private async Task OpenPage(Page page, bool modal = false)
+    {
+        if (_navigating) return;
+        _navigating = true;
+        try
+        {
+            if (modal) await Navigation.PushModalAsync(page);
+            else await Navigation.PushAsync(page);
+        }
+        catch (Exception ex) { await DisplayAlert("Unable to open page", ex.Message, "OK"); }
+        finally { _navigating = false; }
+    }
 
-			foreach (var selected_item in collCart.SelectedItems)
-			{
-				CartPopupItemView? item = (selected_item as CartPopupItemView);
-				if (item != null && item.Item != null)
-				{
-					App.Cart.RemoveItem(item.Item.ID);
-					selected.Add(item);
-				}
-			}
-
-			foreach (var item in selected)
-				view_items.Remove(item);
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ButtonDeleteCartItems error: {ex}");
-		}
-	}
-
-	private async void ButtonCheckoutCart(object sender, EventArgs e)
-	{
-		try
-		{
-			System.Diagnostics.Debug.WriteLine("ButtonCheckoutCart clicked - creating new CheckoutView");
-			// Create and display CheckoutView directly
-			var checkoutPage = new CheckoutView();
-			await Navigation.PushModalAsync(checkoutPage);
-			System.Diagnostics.Debug.WriteLine("Navigation to CheckoutView complete");
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ButtonCheckoutCart error: {ex}");
-			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
-		}
-	}
-
-	private async void ButtonAddEntree(object sender, EventArgs e)
-	{
-		try
-		{
-			System.Diagnostics.Debug.WriteLine("ButtonAddEntree clicked - creating new ItemAddPage");
-			// Create and set up ItemAddPage directly
-			var itemAddPage = new ItemAddPage();
-			itemAddPage.ItemType = MenuItemType.ENTREE.ToString();
-			await Navigation.PushAsync(itemAddPage);
-			System.Diagnostics.Debug.WriteLine("Navigation to ItemAddPage (Entree) complete");
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ButtonAddEntree error: {ex}");
-			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
-		}
-	}
-
-	private async void ButtonAddSide(object sender, EventArgs e)
-	{
-		try
-		{
-			System.Diagnostics.Debug.WriteLine("ButtonAddSide clicked - creating new ItemAddPage");
-			// Create and set up ItemAddPage directly
-			var itemAddPage = new ItemAddPage();
-			itemAddPage.ItemType = MenuItemType.SIDE.ToString();
-			await Navigation.PushAsync(itemAddPage);
-			System.Diagnostics.Debug.WriteLine("Navigation to ItemAddPage (Side) complete");
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ButtonAddSide error: {ex}");
-			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
-		}
-	}
-
-	private async void ButtonAddDrink(object sender, EventArgs e)
-	{
-		try
-		{
-			System.Diagnostics.Debug.WriteLine("ButtonAddDrink clicked - creating new ItemAddPage");
-			// Create and set up ItemAddPage directly
-			var itemAddPage = new ItemAddPage();
-			itemAddPage.ItemType = MenuItemType.DRINK.ToString();
-			await Navigation.PushAsync(itemAddPage);
-			System.Diagnostics.Debug.WriteLine("Navigation to ItemAddPage (Drink) complete");
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ButtonAddDrink error: {ex}");
-			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
-		}
-	}
-
-	private async void ButtonAddDessert(object sender, EventArgs e)
-	{
-		try
-		{
-			System.Diagnostics.Debug.WriteLine("ButtonAddDessert clicked - creating new ItemAddPage");
-			// Create and set up ItemAddPage directly
-			var itemAddPage = new ItemAddPage();
-			itemAddPage.ItemType = MenuItemType.DESSERT.ToString();
-			await Navigation.PushAsync(itemAddPage);
-			System.Diagnostics.Debug.WriteLine("Navigation to ItemAddPage (Dessert) complete");
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ButtonAddDessert error: {ex}");
-			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
-		}
-	}
-
-	private async void ManageMenu_Clicked(object sender, EventArgs e)
-	{
-		try
-		{
-			System.Diagnostics.Debug.WriteLine("ManageMenu_Clicked - creating new MenuDashboardPage");
-			// Create and display MenuDashboardPage directly
-			var dashboardPage = new MenuDashboardPage();
-			await Navigation.PushModalAsync(dashboardPage);
-			System.Diagnostics.Debug.WriteLine("Navigation to MenuDashboardPage complete");
-		}
-		catch (Exception ex)
-		{
-			System.Diagnostics.Debug.WriteLine($"ManageMenu_Clicked error: {ex}");
-			await DisplayAlert("Error", $"Navigation failed: {ex.Message}", "OK");
-		}
-	}
+    private Task OpenCategory(MenuItemType type) => OpenPage(new ItemAddPage { ItemType = type.ToString() });
+    private async void ButtonBuildCombo(object sender, EventArgs e) => await OpenPage(new ComboBuilderPage());
+    private async void ButtonAddEntree(object sender, EventArgs e) => await OpenCategory(MenuItemType.ENTREE);
+    private async void ButtonAddSide(object sender, EventArgs e) => await OpenCategory(MenuItemType.SIDE);
+    private async void ButtonAddDrink(object sender, EventArgs e) => await OpenCategory(MenuItemType.DRINK);
+    private async void ButtonAddDessert(object sender, EventArgs e) => await OpenCategory(MenuItemType.DESSERT);
+    private async void ButtonAddAppetizer(object sender, EventArgs e) => await OpenCategory(MenuItemType.APPETIZER);
+    private async void ManageMenu_Clicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("///dashboard");
+    private async void BackToWelcome(object sender, EventArgs e) => await Shell.Current.GoToAsync("///welcome");
+    private async void ButtonCheckoutCart(object sender, EventArgs e)
+    {
+        if (_items.Count > 0) await OpenPage(new CheckoutView(), modal: true);
+    }
 }

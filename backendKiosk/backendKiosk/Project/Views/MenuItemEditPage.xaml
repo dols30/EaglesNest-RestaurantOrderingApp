@@ -2,23 +2,28 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:backendKiosk.Project.Models"
+             xmlns:local="clr-namespace:backendKiosk.Project.Views"
+             x:DataType="local:MenuItemEditPage"
              x:Class="backendKiosk.Project.Views.MenuItemEditPage"
              Title="{Binding PageTitle}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="10">
+        <VerticalStackLayout Padding="28" Spacing="14" MaximumWidthRequest="680">
 
-            <Label Text="{Binding PageTitle}" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" />
+            <Label Text="{Binding PageTitle}" Style="{StaticResource PageHeading}" />
 
             <!-- Form Fields -->
             <Label Text="Item Name:" />
             <Entry Text="{Binding CurrentMenuItem.ItemName}" Placeholder="Enter item name" />
 
             <Label Text="Item Price:" />
-            <Entry Text="{Binding CurrentMenuItem.ItemPrice}" Keyboard="Numeric" Placeholder="Enter item price" />
+            <Entry x:Name="PriceEntry" Text="{Binding CurrentMenuItem.ItemPrice}" Keyboard="Numeric" Placeholder="Enter item price" />
 
             <Label Text="Type:" />
-            <Picker Title="Select Type" ItemsSource="{Binding MenuItemTypes}" SelectedItem="{Binding SelectedMenuItemType}" />
+            <CollectionView ItemsSource="{Binding MenuItemTypes}" SelectedItem="{Binding SelectedMenuItemType, Mode=TwoWay}" SelectionMode="Single" HeightRequest="70">
+                <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" /></CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate><DataTemplate x:DataType="x:String"><Border Style="{StaticResource SelectionTile}" WidthRequest="114" Padding="12"><Label Text="{Binding .}" FontSize="12" FontFamily="OpenSansSemibold" VerticalOptions="Center" /></Border></DataTemplate></CollectionView.ItemTemplate>
+            </CollectionView>
 
 
             <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
@@ -32,8 +37,8 @@
 
             <!-- Action Buttons -->
             <Button Text="Save" Clicked="SaveButtonClicked" Margin="0,20,0,0"/>
-            <Button Text="Cancel" Clicked="CancelButtonClicked" BackgroundColor="Gray"/>
-             <Button Text="Delete" Clicked="OnDeleteClicked" BackgroundColor="Red" TextColor="White" IsVisible="{Binding IsEditMode}" Margin="0,5,0,0"/>
+            <Button Text="Cancel" Clicked="CancelButtonClicked" Style="{StaticResource SecondaryButton}"/>
+             <Button Text="Delete" Clicked="OnDeleteClicked" Style="{StaticResource SecondaryButton}" IsVisible="{Binding IsEditMode}" Margin="0,5,0,0"/>
 
 
         </VerticalStackLayout>

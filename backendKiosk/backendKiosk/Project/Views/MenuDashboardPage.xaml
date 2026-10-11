@@ -1,73 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:backendKiosk.Project.Models"
-             x:Class="backendKiosk.Project.Views.MenuDashboardPage"
-             Title="Menu Dashboard">
-
-    <ScrollView>
-        <VerticalStackLayout Padding="10" Spacing="10">
-
-            <Label Text="Menu Item Management" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" />
-
-            <!-- Filtering Section -->
-            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="5" RowSpacing="5">
-                <SearchBar x:Name="SearchBarName" Placeholder="Filter by Name..." TextChanged="OnFilterChanged" Grid.ColumnSpan="3" Grid.Row="0"/>
-
-                <Picker x:Name="PickerType" Title="Filter by Type" SelectedIndexChanged="OnFilterChanged" Grid.Column="0" Grid.Row="1">
-                    <Picker.ItemsSource>
-                        <x:Array Type="{x:Type x:String}">
-                            <x:String>All</x:String>
-                            <x:String>Entree</x:String>
-                            <x:String>Side</x:String>
-                            <x:String>Drink</x:String>
-                            <x:String>Dessert</x:String>
-                            <x:String>Appetizer</x:String>
-                        </x:Array>
-                    </Picker.ItemsSource>
-                     <Picker.SelectedIndex>0</Picker.SelectedIndex>
-                </Picker>
-
-                <HorizontalStackLayout Grid.Column="1" Grid.Row="1" Spacing="5" VerticalOptions="Center">
-                     <Label Text="Allows Sizing:" VerticalOptions="Center"/>
-                     <CheckBox x:Name="CheckBoxHasSize" CheckedChanged="OnFilterChanged" />
-                </HorizontalStackLayout>
-
-                 <Button Text="Clear Filters" Clicked="OnClearFiltersClicked" Grid.Column="2" Grid.Row="1" />
-
-            </Grid>
-
-            <!-- Menu Items List -->
-            <CollectionView x:Name="MenuItemsCollectionView"
-                            ItemsSource="{Binding MenuItems}"
-                            SelectionMode="Single"
-                            SelectionChanged="OnItemSelected"
-                            HeightRequest="400">
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="No menu items found." FontSize="Medium" TextColor="Gray" />
-                        <Label Text="Items will appear here once added." FontSize="Small" TextColor="Gray" />
-                    </VerticalStackLayout>
-                </CollectionView.EmptyView>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:MenuItem">
-                        <Grid Padding="10" ColumnDefinitions="*,Auto,Auto,Auto">
-                            <VerticalStackLayout Grid.Column="0">
-                                <Label Text="{Binding ItemName}" FontAttributes="Bold" />
-                                <Label Text="{Binding ItemPrice, StringFormat='Price: {0:C}'}" />
-                                <Label Text="{Binding Type, StringFormat='Type: {0}'}" />
-                                <Label Text="{Binding HasSize, StringFormat='Has Size: {0}'}" />
-                            </VerticalStackLayout>
-                            <Button Text="Edit" Clicked="OnEditClicked" CommandParameter="{Binding .}" Grid.Column="1" Margin="5,0"/>
-                            <Button Text="Remove" Clicked="OnRemoveClicked" CommandParameter="{Binding .}" Grid.Column="2" BackgroundColor="Red" TextColor="White"/>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:models="clr-namespace:backendKiosk.Project.Models" xmlns:local="clr-namespace:backendKiosk.Project.Views"
+             x:Class="backendKiosk.Project.Views.MenuDashboardPage" x:DataType="local:MenuDashboardPage" Title="Admin Dashboard">
+    <Grid Padding="28" MaximumWidthRequest="1100" HorizontalOptions="Fill" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12"><Label Text="Admin Dashboard" Style="{StaticResource PageHeading}" /><Button Grid.Column="1" Text="Back to Menu" Clicked="OnBackToMenu" Style="{StaticResource SecondaryButton}" /></Grid>
+        <VerticalStackLayout Grid.Row="1" Spacing="10">
+            <SearchBar x:Name="SearchBarName" Placeholder="Filter by Name..." TextChanged="OnFilterChanged" />
+            <Label Text="Filter by Type" TextColor="{StaticResource Muted}" FontSize="13" />
+            <CollectionView x:Name="TypeFilters" SelectionMode="Single" SelectionChanged="OnFilterChanged" HeightRequest="70">
+                <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" /></CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate><DataTemplate x:DataType="x:String"><Border Style="{StaticResource SelectionTile}" WidthRequest="120" Padding="12"><Label Text="{Binding .}" FontSize="12" FontFamily="OpenSansSemibold" VerticalOptions="Center" /></Border></DataTemplate></CollectionView.ItemTemplate>
             </CollectionView>
-
-            <!-- Add Button -->
-            <Button Text="Add New Menu Item" Clicked="OnAddItemClicked" HorizontalOptions="FillAndExpand" Margin="0,10,0,0"/>
-
+            <Button Text="Clear Filters" Clicked="OnClearFiltersClicked" Style="{StaticResource SecondaryButton}" HorizontalOptions="Start" />
+            <HorizontalStackLayout Spacing="8"><CheckBox x:Name="CheckBoxHasSize" CheckedChanged="OnFilterChanged" /><Label Text="Has Size Options" VerticalOptions="Center" /></HorizontalStackLayout>
         </VerticalStackLayout>
-    </ScrollView>
+        <CollectionView x:Name="MenuItemsCollectionView" Grid.Row="2" ItemsSource="{Binding MenuItems}" SelectionMode="None" SelectionChanged="OnItemSelected">
+            <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="10" /></CollectionView.ItemsLayout>
+            <CollectionView.EmptyView><Label Text="No menu items found. Try clearing the filters." Padding="20" TextColor="{StaticResource Muted}" /></CollectionView.EmptyView>
+            <CollectionView.ItemTemplate><DataTemplate x:DataType="models:MenuItem"><Border BackgroundColor="White" Padding="16"><Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="10"><VerticalStackLayout Spacing="5"><Label Text="{Binding ItemName}" FontFamily="OpenSansSemibold" FontSize="18" /><Label Text="{Binding Type}" TextColor="{StaticResource Muted}" FontSize="12" /></VerticalStackLayout><Label Grid.Column="1" Text="{Binding ItemPrice, StringFormat='${0:F2}'}" FontFamily="OpenSansSemibold" /><HorizontalStackLayout Grid.Row="1" Grid.ColumnSpan="2" Spacing="10"><Button Text="Edit" Clicked="OnEditClicked" CommandParameter="{Binding .}" /><Button Text="Remove" Clicked="OnRemoveClicked" CommandParameter="{Binding .}" Style="{StaticResource SecondaryButton}" /></HorizontalStackLayout></Grid></Border></DataTemplate></CollectionView.ItemTemplate>
+        </CollectionView>
+        <Button Grid.Row="3" Text="Add New Menu Item" Clicked="OnAddItemClicked" />
+    </Grid>
 </ContentPage>

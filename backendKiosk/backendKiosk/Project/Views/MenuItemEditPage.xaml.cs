@@ -14,8 +14,7 @@ using System.Runtime.CompilerServices;
 
 namespace backendKiosk.Project.Views;
 
-[QueryProperty(nameof(ItemId), "itemId")]
-public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged
+public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged, IQueryAttributable
 {
     private readonly MenuController _menuController;
     // Initialize fields to address CS8618 warnings
@@ -40,7 +39,7 @@ public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged
         set
         {
             _itemId = value;
-            LoadMenuItem(int.TryParse(value, out int id) ? id : 0);
+            _ = LoadRequestedItem();
         }
     }
 
@@ -90,14 +89,25 @@ public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged
         BindingContext = this;
     }
 
-     private async void LoadMenuItem(int itemId)
+     public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        ItemId = query.TryGetValue("itemId", out var id) ? Convert.ToString(id) ?? "0" : "0";
+    }
+
+    private async Task LoadRequestedItem()
+    {
+        try { await LoadMenuItem(int.TryParse(_itemId, out int id) ? id : 0); }
+        catch (Exception ex) { await DisplayAlert("Unable to load item", ex.Message, "OK"); }
+    }
+
+    private async Task LoadMenuItem(int itemId)
     {
         if (itemId > 0)
         {
-            CurrentMenuItem = await _menuController.GetItemByIdAsync(itemId);
-            PageTitle = $"Edit {CurrentMenuItem?.ItemName ?? "Item"}";
+            CurrentMenuItem = await _menuController.GetItemByIdAsync(itemId) ?? throw new InvalidOperationException("This menu item no longer exists.");
+            PageTitle = $"Edit {CurrentMenuItem.ItemName}";
             IsEditMode = true;
-            SelectedMenuItemType = CurrentMenuItem?.Type.ToString();
+            SelectedMenuItemType = CurrentMenuItem.Type.ToString();
         }
         else
         {
@@ -110,7 +120,7 @@ public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged
             };
             PageTitle = "Add New Menu Item";
             IsEditMode = false;
-            SelectedMenuItemType = MenuItemTypes.FirstOrDefault();
+            SelectedMenuItemType = MenuItemTypes.FirstOrDefault() ?? "ENTREE";
         }
          OnPropertyChanged(nameof(CurrentMenuItem));
          OnPropertyChanged(nameof(SelectedMenuItemType));
@@ -128,11 +138,15 @@ public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged
                 return;
             }
 
-            if (CurrentMenuItem.ItemPrice <= 0)
+            if (!double.TryParse(PriceEntry.Text, System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.CurrentCulture, out var price) || !double.IsFinite(price) || price <= 0)
             {
                 await DisplayAlert("Validation Error", "Item price must be greater than zero", "OK");
                 return;
             }
+
+            CurrentMenuItem.ItemPrice = price;
+            CurrentMenuItem.ItemName = CurrentMenuItem.ItemName.Trim();
 
             if (!IsEditMode)
             {
@@ -148,7 +162,7 @@ public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged
             }
             
             // Return to dashboard
-            await Navigation.PopModalAsync();
+            await Shell.Current.GoToAsync("///dashboard");
             System.Diagnostics.Debug.WriteLine("Completed PopModalAsync in SaveButtonClicked");
         }
         catch (Exception ex)
@@ -163,7 +177,7 @@ public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged
         try
         {
             // Return to dashboard without saving
-            await Navigation.PopModalAsync();
+            await Shell.Current.GoToAsync("///dashboard");
             System.Diagnostics.Debug.WriteLine("Completed PopModalAsync in CancelButtonClicked");
         }
         catch (Exception ex)
@@ -186,7 +200,7 @@ public partial class MenuItemEditPage : ContentPage, INotifyPropertyChanged
                 await DisplayAlert("Success", "Item deleted successfully", "OK");
                 
                 // Return to dashboard
-                await Navigation.PopModalAsync();
+                await Shell.Current.GoToAsync("///dashboard");
                 System.Diagnostics.Debug.WriteLine("Completed PopModalAsync after deletion");
             }
         }

@@ -23,12 +23,7 @@ namespace backendKiosk.Project.Data
         // Add a semaphore to prevent multiple initialization attempts
         readonly SemaphoreSlim _initLock = new SemaphoreSlim(1, 1);
 
-        public MenuDatabase()
-        {
-            // Initialize the database when the class is instantiated
-            // but don't block the constructor
-            _ = Init();
-        }
+        private bool _initialized;
 
         async Task Init()
         {
@@ -37,12 +32,12 @@ namespace backendKiosk.Project.Data
                 // Ensure only one initialization process runs at a time
                 await _initLock.WaitAsync();
                 
-                if (Database is not null)
+                if (_initialized)
                     return;
 
                 // Make sure the directory exists
                 string dbPath = DatabaseConstants.DatabasePath;
-                string dbDir = Path.GetDirectoryName(dbPath);
+                string? dbDir = Path.GetDirectoryName(dbPath);
                 if (!string.IsNullOrEmpty(dbDir) && !Directory.Exists(dbDir))
                 {
                     Directory.CreateDirectory(dbDir);
@@ -61,11 +56,13 @@ namespace backendKiosk.Project.Data
                 {
                     await SeedInitialData();
                 }
+                _initialized = true;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Database initialization error: {ex.Message}");
-                // Re-throw to allow calling code to handle the error
+                if (Database is not null) await Database.CloseAsync();
+                Database = null;
                 throw;
             }
             finally
@@ -103,7 +100,7 @@ namespace backendKiosk.Project.Data
                 new backendKiosk.Project.Models.MenuItem("Mozzarella Sticks", 5.99, MenuItemType.APPETIZER, "mozzarellasticks.png"),
                 new backendKiosk.Project.Models.MenuItem("Chicken Wings", 7.49, MenuItemType.APPETIZER, "chickenwings.png")
             };
-            await Database.InsertAllAsync(initialItems);
+            await Database!.InsertAllAsync(initialItems);
         }
 
 

@@ -1,124 +1,57 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="backendKiosk.Project.Views.MainMenuPage"
-             xmlns:models="clr-namespace:backendKiosk.Project.Models"
-             xmlns:local="clr-namespace:backendKiosk.Project.Views"
-             Title="Main Menu">
-
-    <ContentPage.Resources>
-        <Style TargetType="Border" x:Key="MenuButtonBorder">
-            <Setter Property="WidthRequest" Value="220"/>
-            <Setter Property="HeightRequest" Value="80"/>
-            <Setter Property="Stroke" Value="#000000"/>
-            <Setter Property="StrokeThickness" Value="3"/>
-            <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
-            <Setter Property="BackgroundColor" Value="#FFCCCC"/>
-        </Style>
-        <Style TargetType="Button" x:Key="MenuButton">
-            <Setter Property="BackgroundColor" Value="#00000000"/>
-            <Setter Property="FontSize" Value="25"/>
-            <Setter Property="FontAttributes" Value="Bold"/>
-        </Style>
-    </ContentPage.Resources>
-
-    <ScrollView>
-    <Grid RowDefinitions="100, 100, *" ColumnDefinitions="*, 300" x:Name="grdPageFrame">
-        <Label Text="Eagles Nest"
-               FontSize="50" 
-               HorizontalTextAlignment="Center"
-               VerticalTextAlignment="Center"
-               BackgroundColor="#999" Grid.ColumnSpan="2"/>
-
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
-            <Label Text="Welcome!" 
-                   HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center"
-                   FontSize="20"/>
-                   
-            <!-- Admin button - always visible -->
-            <Button Text="Manage Menu" 
-                    Clicked="ManageMenu_Clicked" 
-                    HorizontalOptions="End"
-                    VerticalOptions="Center"
-                    Margin="20"
-                    BackgroundColor="DarkGoldenrod" 
-                    TextColor="White"/>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:backendKiosk.Project.Views"
+             x:Class="backendKiosk.Project.Views.MainMenuPage" Title="Main Menu">
+    <ScrollView x:Name="PageScroll" Orientation="Neither">
+    <Grid x:Name="PageGrid" Padding="28" MaximumWidthRequest="1440" HorizontalOptions="Fill" RowDefinitions="Auto,*" RowSpacing="24">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+            <VerticalStackLayout Spacing="4"><Label x:Name="MenuHeading" Text="Eagles Nest" Style="{StaticResource PageHeading}" /><Label x:Name="WelcomeLabel" Text="Welcome! What are you craving?" TextColor="{StaticResource Muted}" /></VerticalStackLayout>
+            <Button x:Name="ManageButton" Grid.Column="1" Text="Manage Menu" Clicked="ManageMenu_Clicked" Style="{StaticResource SecondaryButton}" VerticalOptions="Center" />
         </Grid>
-
-        <!-- Menu Items -->
-        <VerticalStackLayout Grid.Row="2" Spacing="40" Margin="20" VerticalOptions="Start">
-            <Border Style="{StaticResource MenuButtonBorder}">
-                <Button Style="{StaticResource MenuButton}"
-                        Text="Build a Combo" Clicked="ButtonBuildCombo"/>
-            </Border>
-            <Border Style="{StaticResource MenuButtonBorder}">
-                <Button Style="{StaticResource MenuButton}"
-                        Text="Add a Side" Clicked="ButtonAddSide"/>
-            </Border>
-            <Border Style="{StaticResource MenuButtonBorder}">
-                <Button Style="{StaticResource MenuButton}"
-                        Text="Add a Drink" Clicked="ButtonAddDrink"/>
-            </Border>
-            <Border Style="{StaticResource MenuButtonBorder}">
-                <Button Style="{StaticResource MenuButton}"
-                        Text="Add an Entree" Clicked="ButtonAddEntree"/>
-            </Border>
-            <Border Style="{StaticResource MenuButtonBorder}">
-                <Button Style="{StaticResource MenuButton}"
-                        Text="Add a Desert" Clicked="ButtonAddDessert"/>
-            </Border>
-        </VerticalStackLayout>
-        
-        <!-- Cart View -->  
-        <Grid RowDefinitions="80, *, 80" 
-            Grid.Row="2" Grid.Column="1" BackgroundColor="#10000000">
-            
-            <!--Header-->
-            <Button Text="Cart" WidthRequest="60" HeightRequest="60"
-                Clicked="ButtonToggleCart" HorizontalOptions="End" Margin="5"/>
-            
-            <!--Cart Body-->
-            <CollectionView x:Name="collCart" SelectionMode="Multiple"
-                        Grid.Row="1" VerticalOptions="Fill">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="20"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.EmptyView>
-                    <ContentView>
-                        <Border Stroke="#000" StrokeThickness="5" StrokeShape="RoundRectangle 10" 
-                               Margin="20" WidthRequest="200" HeightRequest="200" VerticalOptions="Center" >
-                            <Label Text="Cart is empty. Add a burger?" BackgroundColor="#8F8"
-                                   HorizontalTextAlignment="Center"
-                                   VerticalTextAlignment="Center"
-                                   FontSize="30" FontAttributes="Bold"
-                                   />
-                        </Border>
-                    </ContentView>
-                </CollectionView.EmptyView>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="local:CartPopupItemView">
-                        <Border WidthRequest="200" Padding="20" Margin="5"
-                                BackgroundColor="#8F8">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Detail}"/>
-                                <Label Text="{Binding ItemCost}"/>
+        <Grid x:Name="MenuLayout" Grid.Row="1" RowDefinitions="*,Auto" ColumnDefinitions="*,300" ColumnSpacing="24" RowSpacing="20">
+            <ScrollView x:Name="MenuScroll">
+                <VerticalStackLayout Spacing="24">
+                    <Border StrokeThickness="0" BackgroundColor="{StaticResource Ink}" StrokeShape="RoundRectangle 20">
+                        <Grid x:Name="ComboBanner" ColumnDefinitions="1.2*,0.8*" HeightRequest="205">
+                            <VerticalStackLayout Spacing="12" Padding="24" VerticalOptions="Center">
+                                <Label Text="Make it a meal." FontFamily="OpenSansSemibold" FontSize="27" TextColor="White" />
+                                <Label Text="Your entree + a side + a drink.&#10;Save 10% with every combo." FontSize="13" TextColor="{StaticResource LightMuted}" />
+                                <Button Text="Build a Combo" Clicked="ButtonBuildCombo" HorizontalOptions="Start" FontSize="13" />
                             </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-            
-            <!--Cart View Footer-->
-            <HorizontalStackLayout Grid.Row="2" Spacing="20" HeightRequest="60" x:Name="layoutCartControls"
-                                   VerticalOptions="Center" HorizontalOptions="Center">
-                <Button Text="Delete Selected" Clicked="ButtonDeleteCartItems"/>
-                <Button Text="Checkout" Clicked="ButtonCheckoutCart" Margin="5"/>
-            </HorizontalStackLayout>
+                            <Image x:Name="ComboPhoto" Grid.Column="1" Source="hero_meal.png" Aspect="AspectFill" SemanticProperties.Description="Burger, fries and a drink" />
+                        </Grid>
+                    </Border>
+                    <VerticalStackLayout Spacing="5"><Label Text="Something for every craving" Style="{StaticResource SectionHeading}" /><Label Text="Choose a category to explore the menu." FontSize="13" TextColor="{StaticResource Muted}" /></VerticalStackLayout>
+                    <Grid x:Name="CategoriesGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <Button x:Name="EntreeCategory" Text="Add an Entree" Clicked="ButtonAddEntree" BackgroundColor="White" TextColor="{StaticResource Ink}" BorderColor="{StaticResource Line}" BorderWidth="1" HeightRequest="86" FontSize="18" />
+                        <Button x:Name="SideCategory" Grid.Column="1" Text="Add a Side" Clicked="ButtonAddSide" BackgroundColor="White" TextColor="{StaticResource Ink}" BorderColor="{StaticResource Line}" BorderWidth="1" HeightRequest="86" FontSize="18" />
+                        <Button x:Name="DrinkCategory" Grid.Row="1" Text="Add a Drink" Clicked="ButtonAddDrink" BackgroundColor="White" TextColor="{StaticResource Ink}" BorderColor="{StaticResource Line}" BorderWidth="1" HeightRequest="86" FontSize="18" />
+                        <Button x:Name="DessertCategory" Grid.Row="1" Grid.Column="1" Text="Add a Dessert" Clicked="ButtonAddDessert" BackgroundColor="White" TextColor="{StaticResource Ink}" BorderColor="{StaticResource Line}" BorderWidth="1" HeightRequest="86" FontSize="18" />
+                        <Button x:Name="AppetizerCategory" Grid.Row="2" Grid.ColumnSpan="2" Text="Add an Appetizer" Clicked="ButtonAddAppetizer" BackgroundColor="White" TextColor="{StaticResource Ink}" BorderColor="{StaticResource Line}" BorderWidth="1" HeightRequest="70" FontSize="18" />
+                    </Grid>
+                    <Button Text="← Back to welcome" Clicked="BackToWelcome" Style="{StaticResource SecondaryButton}" HorizontalOptions="Start" />
+                </VerticalStackLayout>
+            </ScrollView>
+            <Border x:Name="CartPanel" Grid.Column="1" BackgroundColor="White" Padding="20" StrokeShape="RoundRectangle 20">
+                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="18">
+                    <VerticalStackLayout Spacing="5"><Label Text="Your order" Style="{StaticResource SectionHeading}" /><Label x:Name="CartCountLabel" Text="0 items" TextColor="{StaticResource Muted}" FontSize="13" /></VerticalStackLayout>
+                    <CollectionView x:Name="collCart" Grid.Row="1" SelectionMode="Single" SelectionChanged="CartSelectionChanged">
+                        <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="10" /></CollectionView.ItemsLayout>
+                        <CollectionView.EmptyView>
+                            <VerticalStackLayout Padding="8,36" Spacing="10"><Label Text="A good meal starts here." FontFamily="OpenSansSemibold" FontSize="18" /><Label Text="Your cart is empty. Add a favorite from the menu." FontSize="14" TextColor="{StaticResource Muted}" LineHeight="1.3" /></VerticalStackLayout>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="local:CartPopupItemView"><Border Style="{StaticResource SelectionTile}" Padding="14"><VerticalStackLayout Spacing="8"><Label Text="{Binding Detail}" FontSize="13" /><Label Text="{Binding ItemCost}" FontFamily="OpenSansSemibold" /></VerticalStackLayout></Border></DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <VerticalStackLayout Grid.Row="2" Spacing="12" x:Name="layoutCartControls">
+                        <Grid ColumnDefinitions="*,Auto"><Label Text="Subtotal" TextColor="{StaticResource Muted}" /><Label x:Name="CartSubtotalLabel" Grid.Column="1" Text="$0.00" FontFamily="OpenSansSemibold" /></Grid>
+                        <Label Text="Tax calculated at checkout." FontSize="11" TextColor="{StaticResource Muted}" />
+                        <Button x:Name="DeleteButton" Text="Delete Selected" Clicked="ButtonDeleteCartItems" Style="{StaticResource SecondaryButton}" IsEnabled="False" />
+                        <Button x:Name="CheckoutButton" Text="Checkout" Clicked="ButtonCheckoutCart" IsEnabled="False" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
         </Grid>
-        
     </Grid>
     </ScrollView>
-
-
 </ContentPage>

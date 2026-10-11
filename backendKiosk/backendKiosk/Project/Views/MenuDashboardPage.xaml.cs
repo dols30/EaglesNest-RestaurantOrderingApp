@@ -29,6 +29,8 @@ public partial class MenuDashboardPage : ContentPage
         
         InitializeComponent();
         BindingContext = this;
+        TypeFilters.ItemsSource = new[] { "All Types", "ENTREE", "SIDE", "DRINK", "DESSERT", "APPETIZER" };
+        TypeFilters.SelectedItem = "All Types";
     }
     
     public MenuDashboardPage(MenuController menuController)
@@ -39,6 +41,8 @@ public partial class MenuDashboardPage : ContentPage
         
         InitializeComponent();
         BindingContext = this;
+        TypeFilters.ItemsSource = new[] { "All Types", "ENTREE", "SIDE", "DRINK", "DESSERT", "APPETIZER" };
+        TypeFilters.SelectedItem = "All Types";
     }
 
     protected override async void OnAppearing()
@@ -73,7 +77,7 @@ public partial class MenuDashboardPage : ContentPage
         try
         {
             // Safety check - if UI controls aren't initialized yet, don't proceed
-            if (SearchBarName == null || PickerType == null || CheckBoxHasSize == null || MenuItemsCollectionView == null)
+            if (SearchBarName == null || TypeFilters == null || CheckBoxHasSize == null || MenuItemsCollectionView == null)
             {
                 System.Diagnostics.Debug.WriteLine("Filter controls not initialized yet, skipping filter application");
                 return;
@@ -97,7 +101,7 @@ public partial class MenuDashboardPage : ContentPage
                     item.ItemName.ToLowerInvariant().Contains(nameFilter));
             }
 
-            if (PickerType.SelectedIndex > 0 && PickerType.SelectedItem is string selectedTypeString)
+            if (TypeFilters.SelectedItem is string selectedTypeString && selectedTypeString != "All Types")
             {
                 if (!string.IsNullOrEmpty(selectedTypeString) && 
                     Enum.TryParse<MenuItemType>(selectedTypeString, true, out var selectedType))
@@ -146,7 +150,7 @@ public partial class MenuDashboardPage : ContentPage
     private void OnClearFiltersClicked(object sender, EventArgs e)
     {
         if (SearchBarName != null) SearchBarName.Text = string.Empty;
-        if (PickerType != null) PickerType.SelectedIndex = 0;
+        if (TypeFilters != null) TypeFilters.SelectedItem = "All Types";
         if (CheckBoxHasSize != null) CheckBoxHasSize.IsChecked = false;
         ApplyFilters();
     }
@@ -156,7 +160,7 @@ public partial class MenuDashboardPage : ContentPage
         try
         {
             // Navigate to edit page with simplified route
-            await Shell.Current.GoToAsync("///editItem");
+            await Shell.Current.GoToAsync("///editItem", new Dictionary<string, object> { { "itemId", "0" } });
         }
         catch (Exception ex)
         {
@@ -174,7 +178,7 @@ public partial class MenuDashboardPage : ContentPage
                 // Use query parameters with the simplified route
                 var parameters = new Dictionary<string, object>
                 {
-                    { "itemId", itemToEdit.DatabaseID }
+                    { "itemId", itemToEdit.DatabaseID.ToString() }
                 };
                 await Shell.Current.GoToAsync("///editItem", parameters);
             }
@@ -198,6 +202,8 @@ public partial class MenuDashboardPage : ContentPage
             }
         }
     }
+
+    private async void OnBackToMenu(object sender, EventArgs e) => await Shell.Current.GoToAsync("///menu");
 
     private void OnItemSelected(object sender, SelectionChangedEventArgs e)
     {

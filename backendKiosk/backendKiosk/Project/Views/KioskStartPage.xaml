@@ -1,51 +1,52 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="backendKiosk.Project.Views.KioskStartPage"
-             Title="Welcome to Eagles Nest Restaurant"
-             BackgroundColor="#FFB75E5E">
-    
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="backendKiosk.Project.Views.KioskStartPage" Title="Welcome to Eagles Nest Restaurant" BackgroundColor="{StaticResource Ink}">
     <ScrollView>
-        <Grid RowDefinitions="*, Auto, *">
-            <VerticalStackLayout Grid.Row="1"
-                                Spacing="25" 
-                                Padding="30,0" 
-                                VerticalOptions="Center">
-                
-                <Label Text="Eagles Nest Restaurant"
-                       SemanticProperties.HeadingLevel="Level1"
-                       FontSize="32"
-                       HorizontalOptions="Center" />
-                
-                <Label Text="Welcome to our self-ordering kiosk"
-                       SemanticProperties.HeadingLevel="Level2"
-                       SemanticProperties.Description="Welcome to our self-ordering kiosk"
-                       FontSize="18"
-                       HorizontalOptions="Center" />
-                
-                <Entry Placeholder="Enter your name..." 
-                       FontSize="18"
-                       Margin="0,20,0,0"/>
-                
-                <Button Text="Start Order" 
-                        Clicked="StartOrderButton"
-                        FontSize="20"
-                        BackgroundColor="#512BD4"
-                        TextColor="White"
-                        HeightRequest="60"
-                        WidthRequest="200"
-                        HorizontalOptions="Center" />
-                        
-                <Button Text="Admin Dashboard" 
-                        Clicked="AdminButton"
-                        FontSize="14"
-                        BackgroundColor="DarkGoldenrod"
-                        TextColor="White"
-                        HeightRequest="40"
-                        WidthRequest="150"
-                        HorizontalOptions="End"
-                        Margin="0,20,0,0" />
-            </VerticalStackLayout>
+        <Grid x:Name="WelcomeLayout" Padding="48,28" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="32" MaximumWidthRequest="1440" HorizontalOptions="Fill">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
+                <VerticalStackLayout Spacing="0" VerticalOptions="Center">
+                    <Label Text="Eagles Nest" FontFamily="OpenSansSemibold" FontSize="25" TextColor="White" />
+                    <Label Text="RESTAURANT" FontSize="10" CharacterSpacing="3" TextColor="{StaticResource LightMuted}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="Admin Dashboard" Style="{StaticResource DarkSecondaryButton}" Clicked="AdminButton" FontSize="13" />
+            </Grid>
+            <Grid x:Name="HeroGrid" Grid.Row="1" ColumnDefinitions="0.95*,1.05*" RowDefinitions="Auto,Auto" ColumnSpacing="36" RowSpacing="28" MinimumHeightRequest="440">
+                <VerticalStackLayout x:Name="HeroCopy" Spacing="20" VerticalOptions="Center">
+                    <Label Text="WELCOME TO YOUR NEXT FAVORITE MEAL" FontSize="11" CharacterSpacing="1.4" TextColor="{StaticResource Primary}" />
+                    <Label x:Name="HeroHeading" FontFamily="OpenSansSemibold" FontSize="68" LineHeight="1.02" TextColor="White" SemanticProperties.HeadingLevel="Level1">
+                        <Label.FormattedText><FormattedString><Span Text="Good food.&#10;" FontFamily="OpenSansSemibold" FontAttributes="Bold" /><Span Text="Your way." FontFamily="OpenSansSemibold" FontAttributes="Bold" TextColor="{StaticResource Primary}" /></FormattedString></Label.FormattedText>
+                    </Label>
+                    <Label Text="Burgers, crispy sides, and something sweet.&#10;Pick your favorites. We'll take it from here." TextColor="{StaticResource LightMuted}" FontSize="16" LineHeight="1.35" />
+                    <VerticalStackLayout Spacing="10" Margin="0,8,0,0" x:Name="OrderForm" WidthRequest="390" HorizontalOptions="Start">
+                        <Label Text="What should we call you?" TextColor="White" FontSize="13" />
+                        <Border Stroke="{StaticResource NavyLine}" BackgroundColor="{StaticResource NavySurface}" Padding="14,0">
+                            <Entry BackgroundColor="{StaticResource NavySurface}" x:Name="CustomerNameEntry" Placeholder="Enter your name..." TextColor="White" PlaceholderColor="{StaticResource LightMuted}" MaxLength="40" ReturnType="Go" Completed="StartOrderButton" SemanticProperties.Description="Your name, optional" />
+                        </Border>
+                        <Button x:Name="StartButton" Text="Start Order  →" Clicked="StartOrderButton" HeightRequest="56" FontSize="17" SemanticProperties.Description="Start your restaurant order" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+                <Border x:Name="HeroPhoto" Grid.Column="1" StrokeThickness="0" StrokeShape="RoundRectangle 24" HeightRequest="440" BackgroundColor="{StaticResource NavySurface}">
+                    <Image Source="hero_meal.png" Aspect="AspectFill" SemanticProperties.Description="Cheeseburger with golden fries and a cold drink" />
+                </Border>
+            </Grid>
+            <Grid x:Name="StepsGrid" Grid.Row="2" ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="28" RowSpacing="22" Margin="0,6,0,0">
+                <Grid x:Name="StepOne" ColumnDefinitions="42,*" ColumnSpacing="14">
+                    <Label Text="01" TextColor="{StaticResource Primary}" FontSize="24" FontFamily="OpenSansSemibold" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="5"><Label Text="Find your favorites" TextColor="White" FontFamily="OpenSansSemibold" FontSize="16" /><Label Text="Explore the menu, one craving at a time." TextColor="{StaticResource LightMuted}" FontSize="12" /></VerticalStackLayout>
+                </Grid>
+                <Grid x:Name="StepTwo" Grid.Column="1" ColumnDefinitions="42,*" ColumnSpacing="14">
+                    <Label Text="02" TextColor="{StaticResource Primary}" FontSize="24" FontFamily="OpenSansSemibold" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="5"><Label Text="Make it yours" TextColor="White" FontFamily="OpenSansSemibold" FontSize="16" /><Label Text="Build a combo and save 10%." TextColor="{StaticResource LightMuted}" FontSize="12" /></VerticalStackLayout>
+                </Grid>
+                <Grid x:Name="StepThree" Grid.Column="2" ColumnDefinitions="42,*" ColumnSpacing="14">
+                    <Label Text="03" TextColor="{StaticResource Primary}" FontSize="24" FontFamily="OpenSansSemibold" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="5"><Label Text="You're all set" TextColor="White" FontFamily="OpenSansSemibold" FontSize="16" /><Label Text="Review your meal and submit your order." TextColor="{StaticResource LightMuted}" FontSize="12" /></VerticalStackLayout>
+                </Grid>
+            </Grid>
+            <Grid x:Name="FooterGrid" Grid.Row="3" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="8" Padding="0,16,0,0">
+                <Label Text="Welcome to our self-ordering kiosk" TextColor="{StaticResource LightMuted}" FontSize="11" />
+                <Label x:Name="FooterNote" Grid.Column="1" Text="Made for your appetite." TextColor="{StaticResource LightMuted}" FontSize="11" />
+            </Grid>
         </Grid>
     </ScrollView>
 </ContentPage>
