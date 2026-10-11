@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
@@ -21,7 +21,7 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>backendKiosk</ApplicationTitle>
+		<ApplicationTitle>Eagles Nest Restaurant</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.backendkiosk</ApplicationId>
@@ -43,10 +43,10 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#101B2D" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#101B2D" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -71,13 +71,13 @@
 	<!-- Modify Mac Catalyst configuration to disable AOT compilation and code signing -->
 	<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst'))">
 		<!-- Use RuntimeIdentifiers (plural) to support multiple architectures -->
-		<RuntimeIdentifiers>maccatalyst-arm64;maccatalyst-x64</RuntimeIdentifiers>
+		<RuntimeIdentifiers Condition="'$(RuntimeIdentifier)' == ''">maccatalyst-arm64;maccatalyst-x64</RuntimeIdentifiers>
 		<CodesignEntitlements>Platforms/MacCatalyst/Entitlements.plist</CodesignEntitlements>
 		<EnableCodeSigning>False</EnableCodeSigning>
 		<CreatePackage>false</CreatePackage>
 		<!-- Disable AOT -->
 		<UseInterpreter>True</UseInterpreter>
-		<MtouchInterpreter>-all</MtouchInterpreter>
+		<MtouchInterpreter>all</MtouchInterpreter>
 		<AOTMode>None</AOTMode>
 		<IntermediateOutputPath>obj\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\temp</IntermediateOutputPath>
 	</PropertyGroup>

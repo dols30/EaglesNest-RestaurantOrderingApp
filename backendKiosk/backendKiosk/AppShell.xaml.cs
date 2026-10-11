@@ -25,7 +25,7 @@ public partial class AppShell : Shell
         }
     }
 
-    private void Shell_Navigating(object sender, ShellNavigatingEventArgs e)
+    private void Shell_Navigating(object? sender, ShellNavigatingEventArgs e)
     {
         Debug.WriteLine($"Shell navigating to: {e.Target.Location.OriginalString}");
     }

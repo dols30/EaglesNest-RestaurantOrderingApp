@@ -1,90 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="backendKiosk.Project.Views.CheckoutView"
-             Title="CheckoutView">
-
-    <ContentPage.Resources>
-        <Style TargetType="Label" x:Key="AppTitleBar">
-            <Setter Property="FontSize" Value="50"/>
-            <Setter Property="HorizontalTextAlignment" Value="Center"/>
-            <Setter Property="VerticalTextAlignment" Value="Center"/>
-            <Setter Property="BackgroundColor" Value="#999"/>
-        </Style>
-    </ContentPage.Resources>
-    
-    <ScrollView>
-        <Grid RowDefinitions="80, *, 300, 80" 
-                Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" 
-                BackgroundColor="#10000000">
-
-            <!--Header-->
-            <Label Text="Checkout" Style="{x:StaticResource AppTitleBar}"/>
-
-            <!--Cart Body-->
-            <CollectionView x:Name="collCheckoutCart" Grid.Row="1" Grid.Column="1" 
-                            VerticalOptions="FillAndExpand">
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Horizontal"  Span="2"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.EmptyView>
-                    <ContentView>
-                        <Border Stroke="#000" StrokeThickness="5" StrokeShape="RoundRectangle 10" 
-                   Margin="20" WidthRequest="200" HeightRequest="200" VerticalOptions="Center" >
-                            <Label Text="Cart is empty. Add a burger?" BackgroundColor="#8F8"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"
-                       FontSize="30" FontAttributes="Bold"
-                       />
-                        </Border>
-                    </ContentView>
-                </CollectionView.EmptyView>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border WidthRequest="200" Padding="20" Margin="5"
-                        BackgroundColor="#8F8">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Detail}"/>
-                                <Label Text="{Binding ItemCost}"/>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <Border Grid.Row="2">
-                <Grid RowDefinitions="*" ColumnDefinitions="*, *">
-                    <VerticalStackLayout>
-                        <HorizontalStackLayout HorizontalOptions="Center">
-                            <Label Text="SubTotal: " HorizontalTextAlignment="Center" Padding="10, 20" FontSize="30"/>
-                            <Label Text="xx.xx" HorizontalTextAlignment="Center" Padding="0, 20" FontSize="30" x:Name="lblSubTotal"/>
-                        </HorizontalStackLayout>
-                        <Label Text="Add a Tip?" HorizontalTextAlignment="Center" Padding="20" FontSize="30"/>
-                        <Entry Placeholder="Tip..." x:Name="txtTip"  Margin="50, 0" TextChanged="UpdateMealCost"/>
-
-                        <HorizontalStackLayout HorizontalOptions="Center">
-                            <Label Text="Tax: " HorizontalTextAlignment="Center" Padding="0, 20" FontSize="30"/>
-                            <Label Text="xx.xx" HorizontalTextAlignment="Center" Padding="10, 20" FontSize="30" x:Name="lblTax"/>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-
-
-                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="Total" HorizontalTextAlignment="Center" Padding="20" FontSize="30"/>
-                        <Label Text="$XX.XX" HorizontalTextAlignment="Center" Padding="0, 5" FontSize="30" x:Name="lblMealCost"/>
-                    </VerticalStackLayout>
-
-                </Grid>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:backendKiosk.Project.Views"
+             x:Class="backendKiosk.Project.Views.CheckoutView" Title="Checkout">
+    <Grid Padding="28" MaximumWidthRequest="1040" HorizontalOptions="Fill" RowDefinitions="Auto,*,Auto" RowSpacing="20">
+        <VerticalStackLayout Spacing="6"><Label Text="One last look." Style="{StaticResource PageHeading}" /><Label Text="Review your meal before submitting your order." TextColor="{StaticResource Muted}" /></VerticalStackLayout>
+        <CollectionView x:Name="collCheckoutCart" Grid.Row="1" SelectionMode="None">
+            <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="10" /></CollectionView.ItemsLayout>
+            <CollectionView.EmptyView><Label Text="Your cart is empty. Return to the menu to add a favorite." Padding="20" /></CollectionView.EmptyView>
+            <CollectionView.ItemTemplate><DataTemplate x:DataType="local:CartPopupItemView"><Border BackgroundColor="White" Padding="18"><Grid ColumnDefinitions="*,Auto" ColumnSpacing="16"><Label Text="{Binding Detail}" FontSize="15" /><Label Grid.Column="1" Text="{Binding ItemCost}" FontFamily="OpenSansSemibold" FontSize="17" /></Grid></Border></DataTemplate></CollectionView.ItemTemplate>
+        </CollectionView>
+        <VerticalStackLayout Grid.Row="2" Spacing="14">
+            <Border BackgroundColor="White" Padding="20">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto"><Label Text="Subtotal" TextColor="{StaticResource Muted}" /><Label Grid.Column="1" x:Name="lblSubTotal" /></Grid>
+                    <Grid ColumnDefinitions="*,Auto"><Label Text="Tax (7%)" TextColor="{StaticResource Muted}" /><Label Grid.Column="1" x:Name="lblTax" /></Grid>
+                    <Grid ColumnDefinitions="*,120" ColumnSpacing="16"><Label Text="Add a Tip?" VerticalOptions="Center" TextColor="{StaticResource Muted}" /><Border Grid.Column="1" Padding="10,0"><Entry x:Name="txtTip" Placeholder="Tip..." Keyboard="Numeric" TextChanged="UpdateMealCost" SemanticProperties.Description="Optional tip amount in dollars" /></Border></Grid>
+                    <Label x:Name="TipError" Text="Enter a valid, nonnegative tip amount." TextColor="#A12819" FontSize="12" IsVisible="False" />
+                    <BoxView HeightRequest="1" Color="{StaticResource Line}" />
+                    <Grid ColumnDefinitions="*,Auto"><Label Text="Total" FontSize="23" FontFamily="OpenSansSemibold" /><Label Grid.Column="1" x:Name="lblMealCost" FontSize="23" FontFamily="OpenSansSemibold" /></Grid>
+                </VerticalStackLayout>
             </Border>
-            
-            <!--Cart View Footer-->
-            <HorizontalStackLayout Grid.Row="3" Spacing="20" HeightRequest="60" x:Name="layoutCartControls"
-                               VerticalOptions="Center" HorizontalOptions="Center">
-               
-                <Button Text="Submit Order" Clicked="CompletePurchaseClicked"/>
-                <Button Text="Cancel" Clicked="CancelClicked"/>
-
-            </HorizontalStackLayout>
-        </Grid>
-    </ScrollView>
+            <Label Text="Local ordering demo. No payment is collected." TextColor="{StaticResource Muted}" FontSize="11" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12"><Button Text="Cancel" Clicked="CancelClicked" Style="{StaticResource SecondaryButton}" /><Button Grid.Column="1" x:Name="SubmitButton" Text="Submit Order" Clicked="CompletePurchaseClicked" /></Grid>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

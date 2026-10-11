@@ -1,4 +1,4 @@
-﻿/*
+/*
 I acknowledge the following statements:
 That the code I provide below is my own work and NOT copied from any outside resource, which includes, but not limited to, an artificial intelligence program unless given explicit permission by the instructor.
 That the code I provide below is my own work and NOT the work of my peers, tutors, or any other individual unless given explicit permission by the instructor.
@@ -24,9 +24,12 @@ namespace backendKiosk.Project.Controllers
             _database = database;
         }
 
+        private readonly SemaphoreSlim _loadLock = new(1, 1);
+        private bool _loaded;
+
         private async Task EnsureItemsLoaded()
         {
-            if (!_menuItems.Any())
+            if (!_loaded)
             {
                 await LoadMenuItemsAsync();
             }
@@ -34,12 +37,15 @@ namespace backendKiosk.Project.Controllers
 
         public async Task LoadMenuItemsAsync()
         {
-            var items = await _database.GetItemsAsync();
-            _menuItems.Clear();
-            foreach (var item in items)
+            await _loadLock.WaitAsync();
+            try
             {
-                _menuItems.Add(item);
+                var items = await _database.GetItemsAsync();
+                _menuItems.Clear();
+                foreach (var item in items) _menuItems.Add(item);
+                _loaded = true;
             }
+            finally { _loadLock.Release(); }
         }
 
         public async Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> GetMenuItemsAsync()
@@ -89,20 +95,5 @@ namespace backendKiosk.Project.Controllers
              return await _database.GetItemAsync(id);
         }
 
-        // Add backward compatibility methods for existing code
-        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetItems(MenuItemType type)
-        {
-            // Create a task and wait for it to complete to convert async to sync
-            Task<ObservableCollection<backendKiosk.Project.Models.MenuItem>> task = GetItemsByTypeAsync(type);
-            task.Wait();
-            return task.Result;
-        }
-
-        // For compatibility with existing code
-        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetEntreeItems() => GetItems(MenuItemType.ENTREE);
-        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetSideItems() => GetItems(MenuItemType.SIDE);
-        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetDrinkItems() => GetItems(MenuItemType.DRINK);
-        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetDessertItems() => GetItems(MenuItemType.DESSERT);
-        public ObservableCollection<backendKiosk.Project.Models.MenuItem> GetAppetizerItems() => GetItems(MenuItemType.APPETIZER);
     }
 }

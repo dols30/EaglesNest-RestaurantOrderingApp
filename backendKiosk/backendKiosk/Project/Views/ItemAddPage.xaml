@@ -1,149 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="backendKiosk.Project.Views.ItemAddPage"
-             Title="ItemAddPage">
-    
-    <ContentPage.Resources>
-        <Style TargetType="VerticalStackLayout" x:Key="ComboBuilderItemStack">
-            <Setter Property="MaximumHeightRequest" Value="150"/>
-            <Setter Property="WidthRequest" Value="150"/>
-        </Style>
-        <Style TargetType="Image" x:Key="ComboBuilderItemImage">
-            <Setter Property="HorizontalOptions" Value="Center"/>
-            <Setter Property="VerticalOptions" Value="Center"/>
-            <Setter Property="WidthRequest" Value="100"/>
-            <Setter Property="HeightRequest" Value="100"/>
-        </Style>
-        <Style TargetType="Label" x:Key="ComboBuilderSubHeader">
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="HorizontalTextAlignment" Value="Center"/>
-            <Setter Property="FontAttributes" Value="Bold"/>
-            <Setter Property="FontSize" Value="25"/>
-
-        </Style>
-        <Style TargetType="Label" x:Key="AppTitleBar">
-            <Setter Property="FontSize" Value="50"/>
-            <Setter Property="HorizontalTextAlignment" Value="Center"/>
-            <Setter Property="VerticalTextAlignment" Value="Center"/>
-            <Setter Property="BackgroundColor" Value="#999"/>
-        </Style>
-        <Style TargetType="Border" x:Key="ListShape">
-            <Setter Property="StrokeThickness" Value="0"/>
-            <Setter Property="StrokeShape" Value="RoundRectangle 25, 25, 25, 25"/>
-            <Setter Property="Margin" Value="0, 20"/>
-            <Setter Property="Padding" Value="10"/>
-        </Style>
-        <Style TargetType="Label" x:Key="ComboBuilderItemText">
-            <Setter Property="HorizontalOptions" Value="Center"/>
-            <Setter Property="HorizontalTextAlignment" Value="Center"/>
-            <Setter Property="FontAttributes" Value="Bold"/>
-            <Setter Property="FontSize" Value="17"/>
-        </Style>
-        <Style TargetType="CollectionView" x:Key="ComboBuilderColl">
-            <Setter Property="SelectionMode" Value="Single"/>
-        </Style>
-
-        <Style TargetType="VerticalStackLayout" x:Key="ComboBuilderItemLayout">
-            <Setter Property="VisualStateManager.VisualStateGroups">
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal">
-                            <VisualState.Setters/>
-                        </VisualState>
-                        <VisualState x:Name="Selected">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="LightSkyBlue" />
-                                <Setter Property="HorizontalOptions" Value="Start"/>
-                                <Setter Property="WidthRequest" Value="200"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </Setter>
-            <Setter Property="WidthRequest" Value="200"/>
-            <Setter Property="Padding" Value="15"/>
-        </Style>
-
-        <Style TargetType="Border" x:Key="SizeSelectorItemLayout">
-            <Setter Property="VisualStateManager.VisualStateGroups">
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal">
-                            <VisualState.Setters/>
-                        </VisualState>
-                        <VisualState x:Name="Selected">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="LightSkyBlue" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </Setter>
-            <Setter Property="WidthRequest" Value="200"/>
-            <Setter Property="Padding" Value="15"/>
-        </Style>
-
-    </ContentPage.Resources>
-
-    <Grid RowDefinitions="100, *, 300" Padding="10">
-        <Label Text="Select an Item" Style="{x:StaticResource AppTitleBar}"/>
-
-        <ScrollView Grid.Row="1">
-            <Border Style="{x:StaticResource ListShape}" Grid.Row="0">
-                <CollectionView x:Name="collItemSelection" Style="{x:StaticResource ComboBuilderColl}" SelectionChanged="SelectItem">
-                    <CollectionView.ItemsLayout>
-                        <GridItemsLayout Orientation="Horizontal" Span="4"/>
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <VerticalStackLayout Style="{x:StaticResource ComboBuilderItemLayout}">
-                                <Image Source="{Binding Icon}" Style="{x:StaticResource ComboBuilderItemImage}"/>
-                                <Label Text="{Binding ItemName}" Style="{x:StaticResource ComboBuilderItemText}"/>
-                            </VerticalStackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Border>
-        </ScrollView>
-
-        <Grid RowDefinitions="*" ColumnDefinitions="*" Grid.Row="2">
-            <VerticalStackLayout Spacing="10" VerticalOptions="Center" HorizontalOptions="Center">
-                <VerticalStackLayout x:Name="layoutSizeSelectView" IsVisible="False">
-                    <Label Text="3. Select your Size" Style="{x:StaticResource ComboBuilderSubHeader}"/>
-                
-                    <CollectionView x:Name="collSizeSelection" SelectionMode="Single"
-                                    HorizontalOptions="Center" SelectionChanged="SelectSize">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal"  ItemSpacing="10"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Border Stroke="#000" StrokeThickness="5" WidthRequest="120" HeightRequest="100"
-                                        Style="{x:StaticResource SizeSelectorItemLayout}">
-                                    <VerticalStackLayout>
-                                        <Label Text="{Binding Text}" HorizontalOptions="Center" VerticalOptions="Center"
-                                                FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center"/>
-                                        <Label Text="{Binding Rate}" HorizontalOptions="Center" VerticalOptions="Center"
-                                                FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center"/>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-
-                <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
-                    <Button Text="Add to Order" FontSize="30" BackgroundColor="LightGreen" TextColor="DarkGreen"
-                        HorizontalOptions="Center" VerticalOptions="Center" Clicked="AddItemClicked"
-                        WidthRequest="300" HeightRequest="80"/>
-                    <Button Text="Cancel" FontSize="30" BackgroundColor="#FFB0B0" TextColor="DarkRed"
-                        HorizontalOptions="Center" VerticalOptions="Center" Clicked="CancelClicked"
-                        WidthRequest="200" HeightRequest="80"/>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-        
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:backendKiosk.Project.Views"
+             x:Class="backendKiosk.Project.Views.ItemAddPage" Title="Choose an item">
+    <Grid Padding="28" MaximumWidthRequest="1040" HorizontalOptions="Fill" RowDefinitions="Auto,*,Auto" RowSpacing="22">
+        <VerticalStackLayout Spacing="6"><Label x:Name="CategoryHeading" Text="Choose an entree" Style="{StaticResource PageHeading}" /><Label Text="Tap a favorite to add it to your meal." TextColor="{StaticResource Muted}" /></VerticalStackLayout>
+        <Grid Grid.Row="1">
+            <CollectionView x:Name="collItemSelection" SelectionMode="Single" SelectionChanged="SelectItem">
+                <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="12" /></CollectionView.ItemsLayout>
+                <CollectionView.EmptyView><Label Text="No items available in this category yet." Padding="20" TextColor="{StaticResource Muted}" /></CollectionView.EmptyView>
+                <CollectionView.ItemTemplate><DataTemplate x:DataType="local:ItemSelectView">
+                    <Border Style="{StaticResource SelectionTile}"><Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="8"><Label Text="{Binding Name}" FontSize="20" FontFamily="OpenSansSemibold" /><Label Grid.Column="1" Text="{Binding Price}" FontSize="19" FontFamily="OpenSansSemibold" /><Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Description}" FontSize="13" TextColor="{StaticResource Muted}" /></Grid></Border>
+                </DataTemplate></CollectionView.ItemTemplate>
+            </CollectionView>
+            <ActivityIndicator x:Name="LoadingIndicator" IsVisible="False" IsRunning="False" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>
+        <VerticalStackLayout Grid.Row="2" Spacing="16">
+            <VerticalStackLayout x:Name="layoutSizeSelectView" IsVisible="False" Spacing="10">
+                <Label Text="Choose your size" Style="{StaticResource SectionHeading}" />
+                <CollectionView x:Name="collSizeSelection" SelectionMode="Single" SelectionChanged="SelectSize" HeightRequest="88">
+                    <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" /></CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate><DataTemplate x:DataType="local:SizeTypeView"><Border Style="{StaticResource SelectionTile}" WidthRequest="104" Padding="12"><VerticalStackLayout Spacing="6"><Label Text="{Binding Text}" FontFamily="OpenSansSemibold" /><Label Text="{Binding Rate}" FontSize="12" TextColor="{StaticResource Muted}" /></VerticalStackLayout></Border></DataTemplate></CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12"><Button Text="Cancel" Clicked="CancelClicked" Style="{StaticResource SecondaryButton}" /><Button x:Name="AddButton" Grid.Column="1" Text="Add to Order" Clicked="AddItemClicked" IsEnabled="False" /></Grid>
+        </VerticalStackLayout>
     </Grid>
-
 </ContentPage>
